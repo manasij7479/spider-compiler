@@ -8,6 +8,10 @@ void scanString(std::string str)
 {
     std::cout << "STR: " << str <<std::endl;
 }
+void scanSpecial(std::string str)
+{
+    std::cout << "SPC: " << str <<std::endl;
+}
 void scanIdentifier(std::string str)
 {
     std::cout << "IDF: " << str <<std::endl;
@@ -20,11 +24,20 @@ void scanCloseParen()
 {
     std::cout << "CLOSEPAREN\n";
 }
+
+void scanOpenBrace()
+{
+    std::cout << "OPENBRACE\n";
+}
+void scanCloseBrace()
+{
+    std::cout << "CLOSEBRACE\n";
+}
+
 void scanKeyWord(std::string str)
 {
     std::cout << "KEY: " << str <<std::endl;
 }
-
 void reportUnexpected(std::string str)
 {
     throw std::runtime_error("Unexpected '"+str+"' in input.");
