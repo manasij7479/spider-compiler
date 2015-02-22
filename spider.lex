@@ -1,26 +1,28 @@
+%option yylineno
 %{
 #include "Callbacks.hpp"
 #define YY_DECL extern "C" int yylex()
 %}
 %%
-auto {scanKeyWord(yytext);}
-@ {scanKeyWord(yytext);}
-# {scanKeyWord(yytext);}
-= {scanKeyWord(yytext);}
+function {scanKeyWord(yytext, yylineno);}
 
-\".*\" {scanString(yytext);}
-\<.*\> {scanSpecial(yytext);}
+@ {scanKeyWord(yytext, yylineno);}
+# {scanKeyWord(yytext, yylineno);}
+= {scanKeyWord(yytext, yylineno);}
 
-[a-zA-Z+\-*/&|\\][a-zA-Z0-9+\-*/&|\\]* {scanIdentifier(yytext);}
--?[0-9]+ {scanInt(yytext);}
-"(" {scanOpenParen();}
-")" {scanCloseParen();}
+\".*\" {scanString(yytext, yylineno);}
+\<.*\> {scanSpecial(yytext, yylineno);}
 
-"{" {scanOpenBrace();}
-"}" {scanCloseBrace();}
+[a-zA-Z+\-*/&|\\][a-zA-Z0-9+\-*/&|\\]* {scanIdentifier(yytext, yylineno);}
+-?[0-9]+ {scanInt(yytext, yylineno);}
+"(" {scanPunctuation(yytext, yylineno);}
+")" {scanPunctuation(yytext, yylineno);}
+
+"{" {scanPunctuation(yytext, yylineno);}
+"}" {scanPunctuation(yytext, yylineno);}
 
 [ \n\r\t]
-. {reportUnexpected(yytext);}
+. {reportUnexpected(yytext, yylineno);}
 %%
 // int main()
 // {

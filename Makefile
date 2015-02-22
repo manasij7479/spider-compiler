@@ -3,3 +3,6 @@ spc : lex.yy.c main.cpp Callbacks.hpp
 	
 lex.yy.c: spider.lex
 	flex spider.lex
+
+clean:
+	rm spc lex.yy.c

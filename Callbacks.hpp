@@ -1,44 +1,37 @@
+#ifndef CALLBACKS_HPP
+#define CALLBACKS_HPP
+#include "TokenTypes.hpp"
 #include <iostream>
 #include <stdexcept>
-void scanInt(std::string str)
+
+void scanInt(std::string str, int line)
 {
     std::cout << "INT: " << str <<std::endl;
 }
-void scanString(std::string str)
+void scanString(std::string str, int line)
 {
     std::cout << "STR: " << str <<std::endl;
 }
-void scanSpecial(std::string str)
+void scanSpecial(std::string str, int line)
 {
     std::cout << "SPC: " << str <<std::endl;
 }
-void scanIdentifier(std::string str)
+void scanIdentifier(std::string str, int line)
 {
     std::cout << "IDF: " << str <<std::endl;
 }
-void scanOpenParen()
+void scanPunctuation(std::string str, int line)
 {
-    std::cout << "OPENPAREN\n";
-}
-void scanCloseParen()
-{
-    std::cout << "CLOSEPAREN\n";
+    std::cout << "PUN " << str << std::endl;
 }
 
-void scanOpenBrace()
-{
-    std::cout << "OPENBRACE\n";
-}
-void scanCloseBrace()
-{
-    std::cout << "CLOSEBRACE\n";
-}
-
-void scanKeyWord(std::string str)
+void scanKeyWord(std::string str, int line)
 {
     std::cout << "KEY: " << str <<std::endl;
 }
-void reportUnexpected(std::string str)
+void reportUnexpected(std::string str, int line)
 {
     throw std::runtime_error("Unexpected '"+str+"' in input.");
 }
+
+#endif
