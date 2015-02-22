@@ -10,8 +10,8 @@ function {scanKeyWord(yytext, yylineno);}
 # {scanKeyWord(yytext, yylineno);}
 = {scanKeyWord(yytext, yylineno);}
 
-\".*\" {scanString(yytext, yylineno);}
-\<.*\> {scanSpecial(yytext, yylineno);}
+\"(\\.|[^"])*\" {scanString(yytext, yylineno);}
+\<(\\.|[^>])*\> {scanSpecial(yytext, yylineno);}
 
 [a-zA-Z+\-*/&|\\][a-zA-Z0-9+\-*/&|\\]* {scanIdentifier(yytext, yylineno);}
 -?[0-9]+ {scanInt(yytext, yylineno);}
