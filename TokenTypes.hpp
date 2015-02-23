@@ -15,35 +15,36 @@ namespace spc
             Punctuation,
             Keyword
         };
-        Token(Type t):type(t){}
+        Token(Type t, int l):type(t), line(l){}
 
         Type type;
+        int line;
     };
     typedef Token::Type TType;
     
     class IntLiteralToken : public Token
     {
     public:
-        IntLiteralToken(int n):Token(TType::IntLiteral), data(n){}
+        IntLiteralToken(int n, int l):Token(TType::IntLiteral, l), data(n){}
         int data;
     };
     class StringLiteralToken : public Token
     {
     public:
-        StringLiteralToken(std::string s):Token(TType::StringLiteral), data(s){}
+        StringLiteralToken(std::string s, int l):Token(TType::StringLiteral, l), data(s){}
         std::string data;
     };
     class SpecialLiteralToken : public Token
     {
     public:
-        SpecialLiteralToken(std::string s):Token(TType::SpecialLiteral), data(s){}
+        SpecialLiteralToken(std::string s, int l):Token(TType::SpecialLiteral, l), data(s){}
         std::string data;
     };
 
     class KeywordToken : public Token
     {
     public:
-        KeywordToken(std::string s):Token(TType::Keyword), data(s){}
+        KeywordToken(std::string s, int l):Token(TType::Keyword, l), data(s){}
         std::string data;
         //TODO: classify during construction
     };
@@ -51,14 +52,14 @@ namespace spc
     class IdentifierToken : public Token
     {
     public:
-        IdentifierToken(std::string s): Token(TType::Identifier), data(s){}
+        IdentifierToken(std::string s, int l): Token(TType::Identifier, l), data(s){}
         std::string data;
     };
     
     class PunctuationToken : public Token
     {
     public:
-        PunctuationToken(std::string s): Token(TType::Punctuation), data(s){}
+        PunctuationToken(std::string s, int l): Token(TType::Punctuation, l), data(s){}
         std::string data;
     };
 }
