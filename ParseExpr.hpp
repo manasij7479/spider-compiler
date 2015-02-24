@@ -3,6 +3,7 @@
 #include "GlobalState.hpp"
 #include "AST.hpp"
 #include "ParseResult.hpp"
+#include "ParseUtils.hpp"
 namespace spc
 {
     ParseResult parseExpr(int index);
