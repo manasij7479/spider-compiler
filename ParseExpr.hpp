@@ -60,18 +60,9 @@ namespace spc
         auto node = new PrefixCallExpr;
         node->fname =  static_cast<IdExpr*>(result.get());
         index  = result.nextIndex();
-        while (true)
-        {
-            result = parseExpr(index);
-//             std::cerr << "P"<<node->args.size()<<"\n";
-            if (result == false)
-                break;
-            else
-            {
-                index = result.nextIndex();
-                node->args.push_back(static_cast<Expr*>(result.get()));
-            }
-        }
+        result = ZeroOrMore(parseExpr)(index);
+        for (auto x : static_cast<ASTNodeVector*>(result.get())->data)
+            node->args.push_back(static_cast<Expr*>(x));
         return ParseResult(node, result.nextIndex());
     }
     /*

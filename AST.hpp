@@ -6,6 +6,10 @@ namespace spc
     struct ASTNode
     {
     };
+    struct ASTNodeVector : public ASTNode
+    {
+        std::vector<ASTNode*> data;
+    };
     struct Expr : public ASTNode
     {
         // ?

@@ -20,5 +20,26 @@ namespace spc
             return ParseResult(error);
         };
     }
+    
+    ParserFunction ZeroOrMore(ParserFunction f)
+    {
+        return [&](int index) -> ParseResult
+        {
+            auto v = new ASTNodeVector;
+            while(true)
+            {
+                auto result = f(index);
+                if (result == false)
+                    break;
+                else
+                {
+                    index = result.nextIndex();
+                    v->data.push_back(result.get());
+                }
+            }
+            return ParseResult(v, index);
+        };
+    }
+    
 }
 #endif
