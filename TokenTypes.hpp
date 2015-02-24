@@ -13,7 +13,8 @@ namespace spc
             SpecialLiteral,
             Identifier,
             Punctuation,
-            Keyword
+            Keyword,
+            Eof
         };
         Token(Type t, int l):type(t), line(l){}
 
@@ -61,6 +62,12 @@ namespace spc
     public:
         PunctuationToken(std::string s, int l): Token(TType::Punctuation, l), data(s){}
         std::string data;
+    };
+    
+    class EOFToken : public Token
+    {
+    public:
+        EOFToken():Token(TType::Eof, -1){};
     };
     
     inline KeywordToken* getkw(Token* t)

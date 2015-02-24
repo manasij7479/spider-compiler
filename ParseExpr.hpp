@@ -4,6 +4,7 @@
 #include "AST.hpp"
 #include "ParseResult.hpp"
 #include "ParseUtils.hpp"
+#include <iostream>
 namespace spc
 {
     ParseResult parseExpr(int index);
@@ -47,8 +48,8 @@ namespace spc
      */
     ParseResult parsePrefixCallExpr(int index)
     {
-        if (Tokens[index]->type != TType::Keyword)
-            if (getkw(Tokens[index])->data != "'")
+        if (Tokens[index]->type != TType::Keyword
+            || getkw(Tokens[index])->data != "'")
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected ' symbol for prefix call expressions.");
@@ -62,7 +63,8 @@ namespace spc
         while (true)
         {
             result = parseExpr(index);
-            if (!result)
+//             std::cerr << "P"<<node->args.size()<<"\n";
+            if (result == false)
                 break;
             else
             {
@@ -85,7 +87,17 @@ namespace spc
      */
     ParseResult parseExpr(int index)
     {
-        return ParseResult("NOT_IMPLEMENTED");
+        return LinearChoice
+        (
+            {
+                parseIntLiteralExpr,
+                parseStringLiteralExpr,
+                parseIdentifierExpr,
+                parsePrefixCallExpr
+            },
+            "Expected Expression."
+        )
+        (index);
     }
 
 }
