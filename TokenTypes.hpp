@@ -62,5 +62,24 @@ namespace spc
         PunctuationToken(std::string s, int l): Token(TType::Punctuation, l), data(s){}
         std::string data;
     };
+    
+    inline KeywordToken* getkw(Token* t)
+    {
+        return static_cast<KeywordToken*>(t);
+    }
+    inline IntLiteralToken* getil(Token* t)
+    {
+        return static_cast<IntLiteralToken*>(t);
+    }
+    inline StringLiteralToken* getsl(Token* t)
+    {
+        return static_cast<StringLiteralToken*>(t);
+    }
+    inline IdentifierToken* getifr(Token* t)
+    {
+        return static_cast<IdentifierToken*>(t);
+    }
+    
+    
 }
 #endif

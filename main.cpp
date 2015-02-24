@@ -9,10 +9,10 @@ namespace spc
 int main()
 {
     yylex();
-    auto p = spc::parseIntLiteralExpr(0);
+    auto p = spc::parseStringLiteralExpr(0);
     if (!p)
         std::cerr << p.getError() <<std::endl;
     else
         std::cout << "Parsed:" << 
-            static_cast<spc::IntLiteralExpr*>(p.get())->i->data;
+            static_cast<spc::StringLiteralExpr*>(p.get())->s->data;
 }

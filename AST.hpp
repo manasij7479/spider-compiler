@@ -25,13 +25,14 @@ namespace spc
     
     struct PrefixCallExpr : public Expr
     {
-        IdentifierToken* fname;
+        IdExpr* fname;
         std::vector<Expr*> args;
     };
     struct InfixCallExpr: public Expr
     {
+        //Put a keyword/symbol to avoid left rec, don't smudge the grammar
         Expr* callee;
-        IdentifierToken* fname;
+        IdExpr* fname;
         std::vector<Expr*> args;
     };
 }

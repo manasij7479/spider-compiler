@@ -9,7 +9,8 @@ function {scanKeyWord(yytext, yylineno);}
 @ {scanKeyWord(yytext, yylineno);}
 # {scanKeyWord(yytext, yylineno);}
 = {scanKeyWord(yytext, yylineno);}
-
+\. {scanKeyWord(yytext, yylineno);}
+\' {scanKeyWord(yytext, yylineno);}
 
 \"(\\.|[^"])*\" {scanString(yytext, yylineno);}
 \<(\\.|[^>])*\> {scanSpecial(yytext, yylineno);}
