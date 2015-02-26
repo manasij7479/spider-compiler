@@ -14,6 +14,9 @@ int main()
     if (!p)
         std::cerr << p.getError() <<std::endl;
     else
+    {
         std::cout << "Parsed" << std::endl;
-//             static_cast<spc::StringLiteralExpr*>(p.get())->s->data;
+        if (p.get() != nullptr)
+            p.get()->dump();
+    }
 }
