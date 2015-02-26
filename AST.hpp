@@ -38,6 +38,8 @@ namespace spc
     {
         // ?
     };
+    
+    
     struct IdExpr : public Expr
     {
         IdentifierToken* id;
@@ -66,25 +68,35 @@ namespace spc
         }
     };
     
-    struct PrefixCallExpr : public Expr
+    struct ExprList : public Expr
+    {
+        std::vector<Expr*> data;
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
+            tabs(tab);
+            out << "Expression List\n";
+            for (auto node : data)
+                if(node)
+                    node->dump(tab+1, out);
+                else
+                {
+                    tabs(tab+1);
+                    out << "NULL" << std::endl;
+                }
+        }
+    };
+    
+    struct CallExpr : public Expr
     {
         IdExpr* fname;
-        std::vector<Expr*> args;
+        ExprList* args;
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
             out << "Prefix Call Expression\n";
             fname->dump(tab+1, out);
-            for (auto node : args)
-                node->dump(tab+1, out);
+            args->dump(tab+1, out);
         }
-    };
-    struct InfixCallExpr: public Expr
-    {
-        //Put a keyword/symbol to avoid left rec, don't smudge the grammar
-        Expr* callee;
-        IdExpr* fname;
-        std::vector<Expr*> args;
     };
 }
 #endif

@@ -10,7 +10,7 @@ int main()
 {
     yylex();
     spc::Tokens.push_back(new spc::EOFToken);
-    auto p = spc::Sequence({spc::parseExpr, spc::ParseEof})(0);
+    auto p = spc::parseExpr(0);
     if (!p)
         std::cerr << p.getError() <<std::endl;
     else

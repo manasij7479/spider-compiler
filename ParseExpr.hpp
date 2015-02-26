@@ -7,13 +7,32 @@
 #include <iostream>
 namespace spc
 {
-    ParseResult ParsePrefixKeyword(int index)
+    ParseResult parsePrefixKeyword(int index)
     {
         if (Tokens[index]->type != TType::Keyword
             || getkw(Tokens[index])->data != "'")
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected " + "'" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    
+    ParseResult parseOpenParen(int index)
+    {
+        if (Tokens[index]->type != TType::Punctuation
+            || getpu(Tokens[index])->data != "(")
+                return ParseResult("Line: '" 
+                    + std::to_string(Tokens[index]->line)
+                    + "' ::Expected " + "(" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    ParseResult parseCloseParen(int index)
+    {
+        if (Tokens[index]->type != TType::Punctuation
+            || getpu(Tokens[index])->data != ")")
+                return ParseResult("Line: '" 
+                    + std::to_string(Tokens[index]->line)
+                    + "' ::Expected " + ")" +" symbol.");
         else return ParseResult(nullptr, index + 1);
     }
     ParseResult parseExpr(int index);
@@ -53,38 +72,54 @@ namespace spc
     }
     
     /*
-     *  prefixcallexpr <-- ' identifier expr* 
+     * exprlist <- ( expr* )
      */
-    ParseResult parsePrefixCallExpr(int index)
+    ParseResult parseExprList(int index)
     {
-        auto f = Sequence({ParsePrefixKeyword, parseIdentifierExpr, ZeroOrMore(parseExpr)});
+        auto f = Sequence({parseOpenParen, ZeroOrMore(parseExpr), parseCloseParen});
         auto result = f(index);
         if (!result)
             return result;
-        auto node = new PrefixCallExpr;
+        auto list = new ExprList;
         ASTNodeVector* v = static_cast<ASTNodeVector*>(result.get());
-        node->fname = static_cast<IdExpr*>(v->data[1]);
-        for (auto x : static_cast<ASTNodeVector*>(v->data[2])->data)
-            node->args.push_back(static_cast<Expr*>(x));
-        return ParseResult(node, result.nextIndex());
+        for (auto x : static_cast<ASTNodeVector*>(v->data[1])->data)
+            list->data.push_back(static_cast<Expr*>(x));
+        return ParseResult(list, result.nextIndex());
     }
+    
+//     /*
+//      *  prefixcallexpr <- ' identifier expr* 
+//      */
 //     ParseResult parsePrefixCallExpr(int index)
 //     {
-//         auto result = MatchKeyword("'")(index);
+//         auto f = Sequence({parsePrefixKeyword, parseIdentifierExpr, ZeroOrMore(parseExpr)});
+//         auto result = f(index);
 //         if (!result)
 //             return result;
-//         index = result.nextIndex();
-//         result = parseIdentifierExpr(index);
-//         if(!result)
-//             return result;
-//         auto node = new PrefixCallExpr;
-//         node->fname =  static_cast<IdExpr*>(result.get());
-//         index  = result.nextIndex();
-//         result = ZeroOrMore(parseExpr)(index);
-//         for (auto x : static_cast<ASTNodeVector*>(result.get())->data)
+//         auto node = new CallExpr;
+//         ASTNodeVector* v = static_cast<ASTNodeVector*>(result.get());
+//         node->fname = static_cast<IdExpr*>(v->data[1]);
+//         for (auto x : static_cast<ASTNodeVector*>(v->data[2])->data)
 //             node->args.push_back(static_cast<Expr*>(x));
 //         return ParseResult(node, result.nextIndex());
 //     }
+    
+    /*
+     *  prefixcallexpr <- 'identifier exprlist
+     */
+    ParseResult parsePrefixCallExpr(int index)
+    {
+        auto f = Sequence({parsePrefixKeyword, parseIdentifierExpr, parseExprList});
+        auto result = f(index);
+        if(!result)
+            return result;
+        auto call = new CallExpr;
+        auto resultvec = static_cast<ASTNodeVector*>(result.get());
+        call->fname = static_cast<IdExpr*>(resultvec->data[1]);
+        call->args = static_cast<ExprList*>(resultvec->data[2]);
+        return ParseResult(call, result.nextIndex());
+    }
+    
     /*
      * infixcallexpr <- . expr identifier expr*
      */

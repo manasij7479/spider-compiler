@@ -86,6 +86,10 @@ namespace spc
     {
         return static_cast<IdentifierToken*>(t);
     }
+    inline PunctuationToken* getpu(Token* t)
+    {
+        return static_cast<PunctuationToken*>(t);
+    }
     
     
 }
