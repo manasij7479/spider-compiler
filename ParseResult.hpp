@@ -12,15 +12,7 @@ namespace spc
              error(s),index(-1){}
         ParseResult(ASTNode* node, int i)
         {
-            if (node == nullptr)
-            {
-                success = false;
-                error = "Syntax Error";
-            }
-            else
-            {
-                success = true;
-            }
+            success = true;
             result = node;
             index = i;
         }

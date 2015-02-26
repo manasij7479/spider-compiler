@@ -7,6 +7,15 @@
 #include <iostream>
 namespace spc
 {
+    ParseResult ParsePrefixKeyword(int index)
+    {
+        if (Tokens[index]->type != TType::Keyword
+            || getkw(Tokens[index])->data != "'")
+                return ParseResult("Line: '" 
+                    + std::to_string(Tokens[index]->line)
+                    + "' ::Expected " + "'" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
     ParseResult parseExpr(int index);
     ParseResult parseIntLiteralExpr(int index)
     {
@@ -48,23 +57,34 @@ namespace spc
      */
     ParseResult parsePrefixCallExpr(int index)
     {
-        if (Tokens[index]->type != TType::Keyword
-            || getkw(Tokens[index])->data != "'")
-                return ParseResult("Line: '" 
-                    + std::to_string(Tokens[index]->line)
-                    + "' ::Expected ' symbol for prefix call expressions.");
-        index++;
-        auto result = parseIdentifierExpr(index);
-        if(!result)
+        auto f = Sequence({ParsePrefixKeyword, parseIdentifierExpr, ZeroOrMore(parseExpr)});
+        auto result = f(index);
+        if (!result)
             return result;
         auto node = new PrefixCallExpr;
-        node->fname =  static_cast<IdExpr*>(result.get());
-        index  = result.nextIndex();
-        result = ZeroOrMore(parseExpr)(index);
-        for (auto x : static_cast<ASTNodeVector*>(result.get())->data)
+        ASTNodeVector* v = static_cast<ASTNodeVector*>(result.get());
+        node->fname = static_cast<IdExpr*>(v->data[1]);
+        for (auto x : static_cast<ASTNodeVector*>(v->data[2])->data)
             node->args.push_back(static_cast<Expr*>(x));
         return ParseResult(node, result.nextIndex());
     }
+//     ParseResult parsePrefixCallExpr(int index)
+//     {
+//         auto result = MatchKeyword("'")(index);
+//         if (!result)
+//             return result;
+//         index = result.nextIndex();
+//         result = parseIdentifierExpr(index);
+//         if(!result)
+//             return result;
+//         auto node = new PrefixCallExpr;
+//         node->fname =  static_cast<IdExpr*>(result.get());
+//         index  = result.nextIndex();
+//         result = ZeroOrMore(parseExpr)(index);
+//         for (auto x : static_cast<ASTNodeVector*>(result.get())->data)
+//             node->args.push_back(static_cast<Expr*>(x));
+//         return ParseResult(node, result.nextIndex());
+//     }
     /*
      * infixcallexpr <- . expr identifier expr*
      */
@@ -90,6 +110,13 @@ namespace spc
         )
         (index);
     }
-
+    ParseResult ParseEof(int index)
+    {
+        if (Tokens[index]->type == TType::Eof)
+        {
+            return ParseResult(nullptr, index); // Special case for EOF, index does not increase.
+        }
+        else return ParseResult("Line: '" + std::to_string(Tokens[index]->line)+"' ::Expected EOF");
+    }
 }
 #endif

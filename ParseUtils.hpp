@@ -7,23 +7,23 @@
 namespace spc
 {
     typedef std::function<ParseResult(int)> ParserFunction;
-    ParserFunction LinearChoice(std::vector<ParserFunction> functions, std::string error = "Syntax Error")
+    ParserFunction LinearChoice(const std::vector<ParserFunction>& functions, std::string error = "Syntax Error")
     {
         return [&](int index) -> ParseResult
-        {            
+        {   ParseResult result(error);
             for(auto f : functions)
             {
-                auto result = f(index);
+                result = f(index);
                 if (result)
                     return result;
             }
-            return ParseResult(error);
+            return ParseResult(result.getError() + "\n from: " + error);
         };
     }
     
-    ParserFunction ZeroOrMore(ParserFunction f)
+    ParserFunction ZeroOrMore(const ParserFunction& f)
     {
-        return [&](int index) -> ParseResult
+        return [=](int index) -> ParseResult
         {
             auto v = new ASTNodeVector;
             while(true)
@@ -36,10 +36,34 @@ namespace spc
                     index = result.nextIndex();
                     v->data.push_back(result.get());
                 }
+//                 std::cerr << "STAR\n";
             }
             return ParseResult(v, index);
         };
     }
     
+    ParserFunction Sequence(const std::vector<ParserFunction>& functions)
+    {
+        return [=](int index) -> ParseResult
+        {
+            
+            auto v = new ASTNodeVector;
+            for(auto f : functions)
+            {
+                auto result = f(index);
+                if (!result)
+                {
+                    return result;
+                }
+                else
+                {
+                    index = result.nextIndex();
+                    v->data.push_back(result.get());
+                }
+//                 std::cerr << "SEQ\n";
+            }
+            return ParseResult(v, index);
+        };
+    }
 }
 #endif
