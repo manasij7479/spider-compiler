@@ -7,10 +7,10 @@
 #include <iostream>
 namespace spc
 {
-    ParseResult parsePrefixKeyword(int index)
+    ParseResult parsePrefixSymbol(int index)
     {
-        if (Tokens[index]->type != TType::Keyword
-            || getkw(Tokens[index])->data != "'")
+        if (Tokens[index]->type != TType::Symbol
+            || getsy(Tokens[index])->data != "'")
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected " + "'" +" symbol.");
@@ -19,8 +19,8 @@ namespace spc
     
     ParseResult parseOpenParen(int index)
     {
-        if (Tokens[index]->type != TType::Punctuation
-            || getpu(Tokens[index])->data != "(")
+        if (Tokens[index]->type != TType::Symbol
+            || getsy(Tokens[index])->data != "(")
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected " + "(" +" symbol.");
@@ -28,8 +28,8 @@ namespace spc
     }
     ParseResult parseCloseParen(int index)
     {
-        if (Tokens[index]->type != TType::Punctuation
-            || getpu(Tokens[index])->data != ")")
+        if (Tokens[index]->type != TType::Symbol
+            || getsy(Tokens[index])->data != ")")
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected " + ")" +" symbol.");
@@ -109,7 +109,7 @@ namespace spc
      */
     ParseResult parsePrefixCallExpr(int index)
     {
-        auto f = Sequence({parsePrefixKeyword, parseIdentifierExpr, parseExprList});
+        auto f = Sequence({parsePrefixSymbol, parseIdentifierExpr, parseExprList});
         auto result = f(index);
         if(!result)
             return result;

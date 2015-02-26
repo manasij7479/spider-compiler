@@ -20,14 +20,10 @@ void scanIdentifier(std::string str, int line)
 {
     Tokens.push_back(new IdentifierToken(str, line));
 }
-void scanPunctuation(std::string str, int line)
-{
-    Tokens.push_back(new PunctuationToken(str, line));
-}
 
-void scanKeyWord(std::string str, int line)
+void scanSymbol(std::string str, int line)
 {
-    Tokens.push_back(new KeywordToken(str, line));
+    Tokens.push_back(new SymbolToken(str, line));
 }
 void reportUnexpected(std::string str, int line)
 {

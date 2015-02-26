@@ -12,8 +12,7 @@ namespace spc
             StringLiteral,
             SpecialLiteral,
             Identifier,
-            Punctuation,
-            Keyword,
+            Symbol,
             Eof
         };
         Token(Type t, int l):type(t), line(l){}
@@ -42,10 +41,10 @@ namespace spc
         std::string data;
     };
 
-    class KeywordToken : public Token
+    class SymbolToken : public Token
     {
     public:
-        KeywordToken(std::string s, int l):Token(TType::Keyword, l), data(s){}
+        SymbolToken(std::string s, int l):Token(TType::Symbol, l), data(s){}
         std::string data;
         //TODO: classify during construction
     };
@@ -57,12 +56,6 @@ namespace spc
         std::string data;
     };
     
-    class PunctuationToken : public Token
-    {
-    public:
-        PunctuationToken(std::string s, int l): Token(TType::Punctuation, l), data(s){}
-        std::string data;
-    };
     
     class EOFToken : public Token
     {
@@ -70,9 +63,9 @@ namespace spc
         EOFToken():Token(TType::Eof, -1){};
     };
     
-    inline KeywordToken* getkw(Token* t)
+    inline SymbolToken* getsy(Token* t)
     {
-        return static_cast<KeywordToken*>(t);
+        return static_cast<SymbolToken*>(t);
     }
     inline IntLiteralToken* getil(Token* t)
     {
@@ -85,10 +78,6 @@ namespace spc
     inline IdentifierToken* getifr(Token* t)
     {
         return static_cast<IdentifierToken*>(t);
-    }
-    inline PunctuationToken* getpu(Token* t)
-    {
-        return static_cast<PunctuationToken*>(t);
     }
     
     
