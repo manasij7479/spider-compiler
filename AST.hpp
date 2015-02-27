@@ -98,5 +98,25 @@ namespace spc
             args->dump(tab+1, out);
         }
     };
+    
+    struct Stmt : public ASTNode
+    {
+        
+    };
+    
+    struct AssignStmt : public Stmt
+    {
+        IdExpr* lvalue;
+        Expr* rvalue;
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
+            tabs(tab);
+            out << "Lvalue\n";
+            lvalue->dump(tab+1, out);
+            tabs(tab);
+            out << "Rvalue\n";
+            rvalue->dump(tab+1, out);
+        }
+    };
 }
 #endif

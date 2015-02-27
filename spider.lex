@@ -11,7 +11,7 @@ function {scanSymbol(yytext, yylineno);}
 = {scanSymbol(yytext, yylineno);}
 \. {scanSymbol(yytext, yylineno);}
 \' {scanSymbol(yytext, yylineno);}
-
+; {scanSymbol(yytext, yylineno);}
 \"(\\.|[^"])*\" {scanString(yytext, yylineno);}
 \<(\\.|[^>])*\> {scanSpecial(yytext, yylineno);}
 

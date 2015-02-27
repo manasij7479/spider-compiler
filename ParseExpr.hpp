@@ -7,34 +7,56 @@
 #include <iostream>
 namespace spc
 {
-    ParseResult parsePrefixSymbol(int index)
+    bool isCorrectSymbol(int index, std::string s)
     {
-        if (Tokens[index]->type != TType::Symbol
-            || getsy(Tokens[index])->data != "'")
-                return ParseResult("Line: '" 
-                    + std::to_string(Tokens[index]->line)
-                    + "' ::Expected " + "'" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        return Tokens[index]->type == TType::Symbol
+            && getsy(Tokens[index])->data == s;
     }
     
+    ParseResult parsePrefixSymbol(int index)
+    {
+        if (!isCorrectSymbol(index, "'"))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "'" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    ParseResult parseEqualSymbol(int index)
+    {
+        if (!isCorrectSymbol(index, "="))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "=" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
     ParseResult parseOpenParen(int index)
     {
-        if (Tokens[index]->type != TType::Symbol
-            || getsy(Tokens[index])->data != "(")
-                return ParseResult("Line: '" 
-                    + std::to_string(Tokens[index]->line)
-                    + "' ::Expected " + "(" +" symbol.");
+        if (!isCorrectSymbol(index, "("))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "(" +" symbol.");
         else return ParseResult(nullptr, index + 1);
     }
     ParseResult parseCloseParen(int index)
     {
-        if (Tokens[index]->type != TType::Symbol
-            || getsy(Tokens[index])->data != ")")
+        if (!isCorrectSymbol(index, ")"))
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected " + ")" +" symbol.");
         else return ParseResult(nullptr, index + 1);
     }
+    
+    ParseResult parseSemicolon(int index)
+    {
+        if (!isCorrectSymbol(index, ";"))
+                return ParseResult("Line: '" 
+                    + std::to_string(Tokens[index]->line)
+                    + "' ::Expected " + ";" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    
+    
+    
     ParseResult parseExpr(int index);
     ParseResult parseIntLiteralExpr(int index)
     {
