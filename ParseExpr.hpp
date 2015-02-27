@@ -78,14 +78,19 @@ namespace spc
      */
     ParseResult parsePrefixCallExpr(int index)
     {
-        auto f = Sequence({parsePrefixSymbol, parseIdentifierExpr, parseExprList});
+        auto call = new CallExpr;
+        auto f = Sequence
+        (
+            {
+                parsePrefixSymbol, 
+                hook(parseIdentifierExpr, call->fname),
+                hook(parseExprList, call->args)
+            }
+        );
         auto result = f(index);
         if(!result)
             return result;
-        auto call = new CallExpr;
-        auto resultvec = static_cast<ASTNodeVector*>(result.get());
-        call->fname = static_cast<IdExpr*>(resultvec->data[1]);
-        call->args = static_cast<ExprList*>(resultvec->data[2]);
+
         return ParseResult(call, result.nextIndex());
     }
     

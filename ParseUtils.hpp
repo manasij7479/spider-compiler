@@ -81,6 +81,8 @@ namespace spc
             return temp;
         };
     }
+    //TODO: hook with a function argument
+    //FIXME: hook segfaults in ZeroOrMore in ParseExprList
 
 }
 #endif
