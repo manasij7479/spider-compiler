@@ -18,12 +18,12 @@ namespace spc
     }
     ParseResult parseDeclStmt(int index)
     {
-        auto f = Sequence({parseAuto, parseAssignStmt});
+        auto d  = new DeclStmt;
+        auto f = Sequence({parseAuto, hook(parseAssignStmt, d->stmt)});
         auto result = f(index);
         if (!result)
             return result;
-        auto d  = new DeclStmt;
-        d->stmt = static_cast<AssignStmt*>(static_cast<ASTNodeVector*>(result.get())->data[1]);
+//         d->stmt = static_cast<AssignStmt*>(static_cast<ASTNodeVector*>(result.get())->data[1]);
         return ParseResult(d, result.nextIndex());
     }
 }

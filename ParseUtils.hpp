@@ -65,6 +65,22 @@ namespace spc
             return ParseResult(v, index);
         };
     }
+    template<typename ResultType>
+    // ResultType must derive from ASTNode
+    ParserFunction hook(ParserFunction f, ResultType*& result)
+    {
+        return [&](int index) -> ParseResult
+        {
+            auto temp = f(index);
+            if(!temp)
+            {
+                result = nullptr;
+                return temp;
+            }
+            result = static_cast<ResultType*>(temp.get());
+            return temp;
+        };
+    }
 
 }
 #endif
