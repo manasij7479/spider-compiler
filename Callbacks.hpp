@@ -25,6 +25,7 @@ void scanSymbol(std::string str, int line)
 {
     Tokens.push_back(new SymbolToken(str, line));
 }
+
 void reportUnexpected(std::string str, int line)
 {
     throw std::runtime_error("Unexpected '"+str+"' in input.");

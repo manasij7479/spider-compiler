@@ -16,5 +16,15 @@ namespace spc
         stmt->rvalue = static_cast<Expr*>(v->data[2]);
         return ParseResult(stmt, result.nextIndex());
     }
+    ParseResult parseDeclStmt(int index)
+    {
+        auto f = Sequence({parseAuto, parseAssignStmt});
+        auto result = f(index);
+        if (!result)
+            return result;
+        auto d  = new DeclStmt;
+        d->stmt = static_cast<AssignStmt*>(static_cast<ASTNodeVector*>(result.get())->data[1]);
+        return ParseResult(d, result.nextIndex());
+    }
 }
 #endif

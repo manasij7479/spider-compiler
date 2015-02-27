@@ -118,5 +118,21 @@ namespace spc
             rvalue->dump(tab+1, out);
         }
     };
+    
+    struct DeclStmt : public Stmt
+    {
+        //there will be semantic difference
+        AssignStmt* stmt;
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
+            tabs(tab);
+            out << "NEW Lvalue\n";
+            stmt->lvalue->dump(tab+1, out);
+            tabs(tab);
+            out << "Rvalue\n";
+            stmt->rvalue->dump(tab+1, out);
+        }
+    };
+    
 }
 #endif
