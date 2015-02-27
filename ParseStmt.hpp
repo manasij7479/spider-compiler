@@ -1,10 +1,5 @@
 #ifndef PARSE_STMT_HPP
 #define PARSE_STMT_HPP
-
-#include "GlobalState.hpp"
-#include "AST.hpp"
-#include "ParseResult.hpp"
-#include "ParseUtils.hpp"
 #include "ParseExpr.hpp"
 namespace spc
 {
