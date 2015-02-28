@@ -199,6 +199,25 @@ namespace spc
         }
     };
     
+    class WhileStmt : public Stmt
+    {
+    public:
+        WhileStmt(Expr* c, Stmt* b): condition(c), block(b){}
+    private:
+        Expr* condition;
+        Stmt* block;
+    public:
+        auto getCondition(){return condition;}
+        auto getBlock(){return block;}
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
+            tabs(tab);
+            out << "WhileStmt\n";
+            condition->dump(tab+1, out);
+            block->dump(tab+1, out);
+        }
+    };
+    
     class StmtBlock : public Stmt
     {
     public:

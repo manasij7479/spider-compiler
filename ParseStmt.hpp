@@ -76,10 +76,29 @@ namespace spc
             return result;
         else return ParseResult(new IfStmt(c, tb, fb), result.nextIndex());
     }
+    /*
+     * whilestmt <- while (expr) stmtblock
+     */
     ParseResult parseWhileStmt(int index)
     {
-        return ParseResult("NOT_IMPLEMENTED");
+        Expr* c;
+        Stmt* b;
+        auto f = Sequence
+        (
+            {
+                parseWhile, 
+                parseOpenParen, 
+                hook(parseExpr, c),
+                parseCloseParen,
+                hook(parseStmtBlock, b)
+            }
+        );
+        auto result = f(index);
+        if (!result)
+            return result;
+        else return ParseResult(new WhileStmt(c, b), result.nextIndex());
     }
+    
     ParseResult parseStmt(int index)
     {
         return LinearChoice
@@ -88,7 +107,8 @@ namespace spc
                 parseAssignStmt,
                 parseDeclStmt,
                 parseIfStmt,
-                parseWhileStmt
+                parseWhileStmt,
+                parseStmtBlock,
             },
             "Expected Expression."
         )
