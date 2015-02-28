@@ -65,6 +65,18 @@ namespace spc
             return ParseResult(new ASTNodeVector(data), index);
         };
     }
+    
+    ParserFunction Optional(ParserFunction f)
+    {
+        return [=](int index) -> ParseResult
+        {
+            auto result = f(index);
+            if (!result)
+                return ParseResult(nullptr, index);
+            else return result;
+        };
+    }
+    
     template<typename ResultType>
     // ResultType must derive from ASTNode
     ParserFunction hook(ParserFunction f, ResultType*& result)

@@ -45,6 +45,23 @@ namespace spc
         else return ParseResult(nullptr, index + 1);
     }
     
+    ParseResult parseOpenBrace(int index)
+    {
+        if (!isCorrectSymbol(index, "{"))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "{" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    ParseResult parseCloseBrace(int index)
+    {
+        if (!isCorrectSymbol(index, "}"))
+                return ParseResult("Line: '" 
+                    + std::to_string(Tokens[index]->line)
+                    + "' ::Expected " + "}" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    
     ParseResult parseSemicolon(int index)
     {
         if (!isCorrectSymbol(index, ";"))
@@ -59,6 +76,30 @@ namespace spc
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "auto" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    ParseResult parseIf(int index)
+    {
+        if (!isCorrectSymbol(index, "if"))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "if" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    ParseResult parseElse(int index)
+    {
+        if (!isCorrectSymbol(index, "else"))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "else" +" symbol.");
+        else return ParseResult(nullptr, index + 1);
+    }
+    ParseResult parseWhile(int index)
+    {
+        if (!isCorrectSymbol(index, "while"))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "while" +" symbol.");
         else return ParseResult(nullptr, index + 1);
     }
 }

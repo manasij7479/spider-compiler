@@ -149,6 +149,8 @@ namespace spc
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
+            out << "AssignStmt\n";
+            tabs(tab);
             out << "Lvalue\n";
             lvalue->dump(tab+1, out);
             tabs(tab);
@@ -169,11 +171,48 @@ namespace spc
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
-            out << "NEW Lvalue\n";
-            stmt->getLvalue()->dump(tab+1, out);
+            out << "DeclStmt\n";
+            stmt->dump(tab+1, out);
+        }
+    };
+    
+    class IfStmt : public Stmt
+    {
+    public:
+        IfStmt(Expr* c, Stmt* t, Stmt* f): condition(c), trueblock(t), falseblock(f){}
+    private:
+        Expr* condition;
+        Stmt* trueblock;
+        Stmt* falseblock;
+    public:
+        auto getCondition(){return condition;}
+        auto getTrueBlock(){return trueblock;}
+        auto getFalseBlock(){return falseblock;}
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
             tabs(tab);
-            out << "Rvalue\n";
-            stmt->getRvalue()->dump(tab+1, out);
+            out << "IfStmt\n";
+            condition->dump(tab+1, out);
+            trueblock->dump(tab+1, out);
+            if (falseblock)
+                falseblock->dump(tab+1, out);
+        }
+    };
+    
+    class StmtBlock : public Stmt
+    {
+    public:
+        StmtBlock(std::vector<Stmt*> d):data(d){}
+    private:
+        std::vector<Stmt*> data;
+    public:
+        auto getData(){return data;}
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
+            tabs(tab);
+            out << "StmtBlock\n";
+            for (auto s : data)
+                s->dump(tab+1, out);
         }
     };
     
