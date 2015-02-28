@@ -9,17 +9,23 @@ namespace spc
         while(t--)
             out << '\t';
     }
-    struct ASTNode
+    class ASTNode
     {
+    public:
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab, out);
             out<<"<EMPTY NODE>\n";
         }
     };
-    struct ASTNodeVector : public ASTNode
+    class ASTNodeVector : public ASTNode
     {
+    public:
+        ASTNodeVector(std::vector<ASTNode*> d):data(d){}
+    private:
         std::vector<ASTNode*> data;
+    public:
+        auto getData(){return data;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab, out);
@@ -34,33 +40,48 @@ namespace spc
                 }
         }
     };
-    struct Expr : public ASTNode
+    class Expr : public ASTNode
     {
         // ?
     };
     
     
-    struct IdExpr : public Expr
+    class IdExpr : public Expr
     {
+    public:
+        IdExpr(IdentifierToken* id_):id(id_){}
+    private:
         IdentifierToken* id;
+    public:
+        auto getToken(){return id;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
             out << "Identifier: " << id->data << "\n";
         }
     };
-    struct IntLiteralExpr: public Expr
+    class IntLiteralExpr: public Expr
     {
+    public:
+        IntLiteralExpr(IntLiteralToken* it):i(it){}
+    private:
         IntLiteralToken* i;
+    public:
+        auto getToken(){return i;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
             out << "Int Literal: " << i->data << "\n";
         }
     };
-    struct StringLiteralExpr: public Expr
+    class StringLiteralExpr: public Expr
     {
+    public:
+        StringLiteralExpr(StringLiteralToken* st):s(st){}
+    private:
         StringLiteralToken* s;
+    public:
+        auto getToken(){return s;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
@@ -68,9 +89,14 @@ namespace spc
         }
     };
     
-    struct ExprList : public Expr
+    class ExprList : public Expr
     {
+    public:
+        ExprList(std::vector<Expr*> el): data(el){}
+    private:
         std::vector<Expr*> data;
+    public:
+        auto getData(){return data;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
@@ -86,10 +112,16 @@ namespace spc
         }
     };
     
-    struct CallExpr : public Expr
+    class CallExpr : public Expr
     {
+    public:
+        CallExpr(IdExpr* id, ExprList* el):fname(id), args(el){}
+    private:
         IdExpr* fname;
         ExprList* args;
+    public:
+        auto getCaller(){return fname;}
+        auto getArgs(){return args;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
@@ -99,15 +131,21 @@ namespace spc
         }
     };
     
-    struct Stmt : public ASTNode
+    class Stmt : public ASTNode
     {
         
     };
     
-    struct AssignStmt : public Stmt
+    class AssignStmt : public Stmt
     {
+    public:
+        AssignStmt(IdExpr* lv, Expr* rv):lvalue(lv), rvalue(rv){}
+    private:
         IdExpr* lvalue;
         Expr* rvalue;
+    public:
+        auto getLvalue(){return lvalue;}
+        auto getRvalue(){return rvalue;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
@@ -119,18 +157,23 @@ namespace spc
         }
     };
     
-    struct DeclStmt : public Stmt
+    class DeclStmt : public Stmt
     {
         //there will be semantic difference
+    public:
+        DeclStmt(AssignStmt* as):stmt(as){}
+    private:
         AssignStmt* stmt;
+    public:
+        auto getAssignStmt(){return stmt;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
             tabs(tab);
             out << "NEW Lvalue\n";
-            stmt->lvalue->dump(tab+1, out);
+            stmt->getLvalue()->dump(tab+1, out);
             tabs(tab);
             out << "Rvalue\n";
-            stmt->rvalue->dump(tab+1, out);
+            stmt->getRvalue()->dump(tab+1, out);
         }
     };
     

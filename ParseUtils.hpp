@@ -25,7 +25,7 @@ namespace spc
     {
         return [=](int index) -> ParseResult
         {
-            auto v = new ASTNodeVector;
+            std::vector<ASTNode*> data;
             while(true)
             {
                 auto result = f(index);
@@ -34,11 +34,11 @@ namespace spc
                 else
                 {
                     index = result.nextIndex();
-                    v->data.push_back(result.get());
+                    data.push_back(result.get());
                 }
 //                 std::cerr << "STAR\n";
             }
-            return ParseResult(v, index);
+            return ParseResult(new ASTNodeVector(data), index);
         };
     }
     
@@ -47,7 +47,7 @@ namespace spc
         return [=](int index) -> ParseResult
         {
             
-            auto v = new ASTNodeVector;
+            std::vector<ASTNode*> data;
             for(auto f : functions)
             {
                 auto result = f(index);
@@ -58,11 +58,11 @@ namespace spc
                 else
                 {
                     index = result.nextIndex();
-                    v->data.push_back(result.get());
+                    data.push_back(result.get());
                 }
 //                 std::cerr << "SEQ\n";
             }
-            return ParseResult(v, index);
+            return ParseResult(new ASTNodeVector(data), index);
         };
     }
     template<typename ResultType>
@@ -78,6 +78,7 @@ namespace spc
                 return temp;
             }
             result = static_cast<ResultType*>(temp.get());
+//             result->dump(0, std::cerr);
             return temp;
         };
     }

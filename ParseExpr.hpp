@@ -9,9 +9,7 @@ namespace spc
     {
         if (Tokens[index]->type == TType::IntLiteral)
         {
-            auto iexp = new IntLiteralExpr;
-            iexp->i = getil(Tokens[index]);
-            return ParseResult(iexp, index+1);
+            return ParseResult(new IntLiteralExpr(getil(Tokens[index])), index+1);
         }
         else return ParseResult("Line: '" + std::to_string(Tokens[index]->line)+"' ::Expected Int Literal");
     }
@@ -19,9 +17,7 @@ namespace spc
     {
         if (Tokens[index]->type == TType::StringLiteral)
         {
-            auto sexp = new StringLiteralExpr;
-            sexp->s = getsl(Tokens[index]);
-            return ParseResult(sexp, index+1);
+            return ParseResult(new StringLiteralExpr(getsl(Tokens[index])), index+1);
         }
         else return ParseResult("Line: '" 
             + std::to_string(Tokens[index]->line)
@@ -31,9 +27,7 @@ namespace spc
     {
         if (Tokens[index]->type == TType::Identifier)
         {
-            auto idexp = new IdExpr;
-            idexp->id = getifr(Tokens[index]);
-            return ParseResult(idexp, index+1);
+            return ParseResult(new IdExpr(getifr(Tokens[index])), index+1);
         }
         else return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
@@ -49,11 +43,11 @@ namespace spc
         auto result = f(index);
         if (!result)
             return result;
-        auto list = new ExprList;
         ASTNodeVector* v = static_cast<ASTNodeVector*>(result.get());
-        for (auto x : static_cast<ASTNodeVector*>(v->data[1])->data)
-            list->data.push_back(static_cast<Expr*>(x));
-        return ParseResult(list, result.nextIndex());
+        std::vector<Expr*> data;
+        for (auto x : static_cast<ASTNodeVector*>(v->getData()[1])->getData())
+            data.push_back(static_cast<Expr*>(x));
+        return ParseResult(new ExprList(data), result.nextIndex());
     }
     
 //     /*
@@ -78,20 +72,21 @@ namespace spc
      */
     ParseResult parsePrefixCallExpr(int index)
     {
-        auto call = new CallExpr;
+        IdExpr* id;
+        ExprList* list;
         auto f = Sequence
         (
             {
                 parsePrefixSymbol, 
-                hook(parseIdentifierExpr, call->fname),
-                hook(parseExprList, call->args)
+                hook(parseIdentifierExpr, id),
+                hook(parseExprList, list)
             }
         );
         auto result = f(index);
         if(!result)
             return result;
 
-        return ParseResult(call, result.nextIndex());
+        return ParseResult(new CallExpr(id, list), result.nextIndex());
     }
     
     /*

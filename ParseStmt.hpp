@@ -6,13 +6,14 @@ namespace spc
     ParseResult parseStmt();
     ParseResult parseAssignStmt(int index)
     {
-        auto stmt = new AssignStmt;
+        IdExpr* lv;
+        Expr* rv;
         auto f = Sequence
         (
             {
-                hook(parseIdentifierExpr, stmt->lvalue),
+                hook(parseIdentifierExpr,lv),
                 parseEqualSymbol, 
-                hook(parseExpr, stmt->rvalue),
+                hook(parseExpr, rv),
                 parseSemicolon
             }
         );
@@ -21,17 +22,16 @@ namespace spc
         if (!result)
             return result;
         
-        return ParseResult(stmt, result.nextIndex());
+        return ParseResult(new AssignStmt(lv, rv), result.nextIndex());
     }
     ParseResult parseDeclStmt(int index)
     {
-        auto d  = new DeclStmt;
-        auto f = Sequence({parseAuto, hook(parseAssignStmt, d->stmt)});
+        AssignStmt* as;
+        auto f = Sequence({parseAuto, hook(parseAssignStmt, as)});
         auto result = f(index);
         if (!result)
             return result;
-//         d->stmt = static_cast<AssignStmt*>(static_cast<ASTNodeVector*>(result.get())->data[1]);
-        return ParseResult(d, result.nextIndex());
+        return ParseResult(new DeclStmt(as), result.nextIndex());
     }
 }
 #endif
