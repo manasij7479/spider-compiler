@@ -9,7 +9,7 @@ namespace spc
     typedef std::function<ParseResult(int)> ParserFunction;
     ParserFunction LinearChoice(const std::vector<ParserFunction>& functions, std::string error = "Syntax Error")
     {
-        return [&](int index) -> ParseResult
+        return [=](int index) -> ParseResult
         {   ParseResult result(error);
             for(auto f : functions)
             {
@@ -94,8 +94,31 @@ namespace spc
             return temp;
         };
     }
-    //TODO: hook with a function argument
     //FIXME: hook segfaults in ZeroOrMore in ParseExprList
+    template<>
+    ParserFunction hook<ParseResult>(ParserFunction f, ParseResult*& result)
+    {
+        return [&](int index) -> ParseResult
+        {
+            result = new ParseResult(f(index));
+//             result->dump(0, std::cerr);
+            return *result;
+        };
+    }
+    
+    template<typename F>
+    ParserFunction hook(ParserFunction f, F callback)
+    {
+        return [&](int index) -> ParseResult
+        {
+            auto result = f(index);
+            callback(result);
+            return result;
+        };
+    }
+    
+    //FIXME: segfault if capture by reference :/
+
 
 }
 #endif

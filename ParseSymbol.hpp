@@ -18,7 +18,7 @@ namespace spc
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "'" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     ParseResult parseEqualSymbol(int index)
     {
@@ -26,7 +26,7 @@ namespace spc
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "=" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     ParseResult parseOpenParen(int index)
     {
@@ -34,7 +34,7 @@ namespace spc
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "(" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     ParseResult parseCloseParen(int index)
     {
@@ -42,7 +42,7 @@ namespace spc
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected " + ")" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     
     ParseResult parseOpenBrace(int index)
@@ -51,7 +51,7 @@ namespace spc
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "{" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     ParseResult parseCloseBrace(int index)
     {
@@ -59,7 +59,7 @@ namespace spc
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected " + "}" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     
     ParseResult parseSemicolon(int index)
@@ -68,15 +68,25 @@ namespace spc
                 return ParseResult("Line: '" 
                     + std::to_string(Tokens[index]->line)
                     + "' ::Expected " + ";" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
+    
+    ParseResult parseAlpha(int index)
+    {
+        if (!isCorrectSymbol(index, "@"))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "@" +" symbol.");
+        else return ParseResult(new ASTNode(), index + 1);
+    }
+    
     ParseResult parseAuto(int index)
     {
         if (!isCorrectSymbol(index, "auto"))
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "auto" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     ParseResult parseIf(int index)
     {
@@ -84,7 +94,7 @@ namespace spc
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "if" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     ParseResult parseElse(int index)
     {
@@ -92,7 +102,7 @@ namespace spc
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "else" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
     ParseResult parseWhile(int index)
     {
@@ -100,7 +110,8 @@ namespace spc
             return ParseResult("Line: '" 
                 + std::to_string(Tokens[index]->line)
                 + "' ::Expected " + "while" +" symbol.");
-        else return ParseResult(nullptr, index + 1);
+        else return ParseResult(new ASTNode(), index + 1);
     }
+    
 }
 #endif

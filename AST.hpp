@@ -56,7 +56,7 @@ namespace spc
         auto getToken(){return id;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "Identifier: " << id->data << "\n";
         }
     };
@@ -70,7 +70,7 @@ namespace spc
         auto getToken(){return i;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "Int Literal: " << i->data << "\n";
         }
     };
@@ -84,7 +84,7 @@ namespace spc
         auto getToken(){return s;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "String Literal: " << s->data << "\n";
         }
     };
@@ -99,7 +99,7 @@ namespace spc
         auto getData(){return data;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "Expression List\n";
             for (auto node : data)
                 if(node)
@@ -124,13 +124,13 @@ namespace spc
         auto getArgs(){return args;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "Prefix Call Expression\n";
             fname->dump(tab+1, out);
             args->dump(tab+1, out);
         }
     };
-    
+      
     class Stmt : public ASTNode
     {
         
@@ -148,12 +148,12 @@ namespace spc
         auto getRvalue(){return rvalue;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "AssignStmt\n";
-            tabs(tab);
+            tabs(tab, out);
             out << "Lvalue\n";
             lvalue->dump(tab+1, out);
-            tabs(tab);
+            tabs(tab, out);
             out << "Rvalue\n";
             rvalue->dump(tab+1, out);
         }
@@ -170,7 +170,7 @@ namespace spc
         auto getAssignStmt(){return stmt;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "DeclStmt\n";
             stmt->dump(tab+1, out);
         }
@@ -190,7 +190,7 @@ namespace spc
         auto getFalseBlock(){return falseblock;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "IfStmt\n";
             condition->dump(tab+1, out);
             trueblock->dump(tab+1, out);
@@ -211,7 +211,7 @@ namespace spc
         auto getBlock(){return block;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "WhileStmt\n";
             condition->dump(tab+1, out);
             block->dump(tab+1, out);
@@ -228,12 +228,47 @@ namespace spc
         auto getData(){return data;}
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "StmtBlock\n";
             for (auto s : data)
                 s->dump(tab+1, out);
         }
     };
     
+    class TypeDefinition : public ASTNode
+    {
+    public:
+        TypeDefinition(std::vector<TypeDefinition*> d, IdExpr* i, bool alpha): data(d), id(i), is_array(alpha){}
+    private:
+        IdExpr* id; // exists if builtin or named
+        std::vector<TypeDefinition*> data;
+        bool is_array;
+    public:
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
+            tabs(tab, out);
+            out << "TypeDefinition\n";
+            tabs(tab, out);
+            if (id)
+                id->dump(tab+1, out);
+            else
+            {
+                tabs(tab);
+                out << "Array: " << is_array<<"\n";
+                for(auto td: data)
+                {
+                    td->dump(tab+1, out);
+                }
+            }
+        }
+    };
+    
+    class TypeDefinitionStmt: public Stmt
+    {
+    public:
+    private:
+        IdExpr* id;
+        TypeDefinition* def;
+    };
 }
 #endif

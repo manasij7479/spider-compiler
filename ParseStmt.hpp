@@ -99,6 +99,41 @@ namespace spc
         else return ParseResult(new WhileStmt(c, b), result.nextIndex());
     }
     
+    /*
+     * typedef <- (typedef typedef*)@? / identifier
+     */
+    ParseResult parseTypeDefinition(int index)
+    {
+        std::vector<TypeDefinition*> v;
+        IdExpr* id = nullptr;
+        ParseResult* alphaResult = nullptr;
+        ParseResult* tdResult = nullptr;
+        auto f = LinearChoice
+            ({
+                    Sequence
+                    ({
+                            parseOpenParen, 
+                            ZeroOrMore(parseTypeDefinition), 
+                            parseCloseParen, 
+                            Optional(parseAlpha)
+                    }),
+                    hook(parseIdentifierExpr, id)
+            });
+        auto result = f(index);
+//         if (!result)
+//             return result;
+//         if(tdResult != nullptr && tdResult->get() != nullptr)
+//         {
+//             ASTNodeVector* vec = static_cast<ASTNodeVector*>(tdResult->get());
+//             if (vec != nullptr)
+//                 for (auto node : vec->getData())
+//                     v.push_back(static_cast<TypeDefinition*>(node));
+//         }
+//         
+//         return ParseResult(new TypeDefinition({}, id, alphaResult->get() != nullptr), result.nextIndex());
+        return result;
+    }
+    
     ParseResult parseStmt(int index)
     {
         return LinearChoice
