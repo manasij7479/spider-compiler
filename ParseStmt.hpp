@@ -106,8 +106,6 @@ namespace spc
     {
         std::vector<TypeDefinition*> v;
         IdExpr* id = nullptr;
-        ParseResult* alphaResult = nullptr;
-        ParseResult* tdResult = nullptr;
         auto f = LinearChoice
             ({
                     Sequence
@@ -120,18 +118,21 @@ namespace spc
                     hook(parseIdentifierExpr, id)
             });
         auto result = f(index);
-//         if (!result)
-//             return result;
-//         if(tdResult != nullptr && tdResult->get() != nullptr)
-//         {
-//             ASTNodeVector* vec = static_cast<ASTNodeVector*>(tdResult->get());
-//             if (vec != nullptr)
-//                 for (auto node : vec->getData())
-//                     v.push_back(static_cast<TypeDefinition*>(node));
-//         }
-//         
-//         return ParseResult(new TypeDefinition({}, id, alphaResult->get() != nullptr), result.nextIndex());
-        return result;
+        if (!result)
+            return result;
+        if (id != nullptr)
+            return ParseResult(new TypeDefinition({}, id, false), result.nextIndex());
+        else
+        {
+            ASTNodeVector* seq = static_cast<ASTNodeVector*>(result.get());
+            ASTNodeVector* rec = static_cast<ASTNodeVector*>(seq->getData()[1]);
+            bool hasalpha = seq->getData()[3] != nullptr;
+            std::vector<TypeDefinition*> data;
+            for (auto node: rec->getData())
+                data.push_back(static_cast<TypeDefinition*>(node));
+            return ParseResult(new TypeDefinition(data, nullptr, hasalpha), result.nextIndex());
+        }
+        
     }
     
     ParseResult parseStmt(int index)
