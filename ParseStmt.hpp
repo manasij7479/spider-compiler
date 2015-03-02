@@ -164,7 +164,24 @@ namespace spc
         else
             return ParseResult(new ReturnStmt(e), result.nextIndex());
     }
-    
+    ParseResult parseFunctionDefinitionStmt(int index)
+    {
+        auto f = Sequence
+        (
+            {
+                parseFunction,
+                parseIdentifierExpr,
+                parseExprList,
+                parseTypeDefinition,
+                parseStmtBlock
+            }
+        );
+        auto result = f(index);
+        if (!result)
+            return result;
+        else
+            return result;
+    }
     ParseResult parseStmt(int index)
     {
         return LinearChoice

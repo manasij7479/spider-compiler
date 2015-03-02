@@ -128,6 +128,14 @@ namespace spc
                 + "' ::Expected " + "type" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
+    ParseResult parseFunction(int index)
+    {
+        if (!isCorrectSymbol(index, "function"))
+            return ParseResult("Line: '" 
+                + std::to_string(Tokens[index]->line)
+                + "' ::Expected " + "function" +" symbol.");
+        else return ParseResult(new ASTNode(), index + 1);
+    }
     
     
 }
