@@ -153,6 +153,18 @@ namespace spc
         else
             return ParseResult(new TypeDefinitionStmt(id, td), result.nextIndex());
     }
+    
+    ParseResult parseReturnStmt(int index)
+    {
+        Expr* e;
+        auto f = Sequence({parseReturn, hook(parseExpr, e), parseSemicolon});
+        auto result = f(index);
+        if (!result)
+            return result;
+        else
+            return ParseResult(new ReturnStmt(e), result.nextIndex());
+    }
+    
     ParseResult parseStmt(int index)
     {
         return LinearChoice
@@ -168,6 +180,5 @@ namespace spc
         )
         (index);
     }
-
 }
 #endif
