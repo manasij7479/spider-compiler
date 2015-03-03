@@ -266,9 +266,19 @@ namespace spc
     class TypeDefinitionStmt: public Stmt
     {
     public:
+        TypeDefinitionStmt(IdExpr* i, TypeDefinition* td): id(i), def(td){}
     private:
         IdExpr* id;
         TypeDefinition* def;
+    public:
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
+            tabs(tab);
+            out << "TypeDefinitionStmt\n";
+            id->dump(tab+1, out);
+            def->dump(tab+1, out);
+        }
     };
+    
 }
 #endif
