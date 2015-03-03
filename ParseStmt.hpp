@@ -134,7 +134,6 @@ namespace spc
         }
         
     }
-    
     ParseResult parseTypeDefinitionStmt(int index)
     {
         IdExpr* id;
@@ -151,10 +150,39 @@ namespace spc
         auto result = f(index);
         if (!result)
             return result;
-        else 
+        else
             return ParseResult(new TypeDefinitionStmt(id, td), result.nextIndex());
     }
     
+    ParseResult parseReturnStmt(int index)
+    {
+        Expr* e;
+        auto f = Sequence({parseReturn, hook(parseExpr, e), parseSemicolon});
+        auto result = f(index);
+        if (!result)
+            return result;
+        else
+            return ParseResult(new ReturnStmt(e), result.nextIndex());
+    }
+    ParseResult parseFunctionDefinitionStmt(int index)
+    {
+        auto f = Sequence
+        (
+            {
+                parseFunction,
+                parseIdentifierExpr,
+                parseExprList,
+                parseTypeDefinition,
+                parseStmtBlock
+            }
+        );
+        auto result = f(index);
+        if (!result)
+            return result;
+        else
+            return result;
+    }
+
     ParseResult parseStmt(int index)
     {
         return LinearChoice
@@ -170,6 +198,5 @@ namespace spc
         )
         (index);
     }
-
 }
 #endif

@@ -273,10 +273,25 @@ namespace spc
     public:
         virtual void dump(int tab=0, std::ostream& out = std::cout)
         {
-            tabs(tab);
+            tabs(tab, out);
             out << "TypeDefinitionStmt\n";
             id->dump(tab+1, out);
             def->dump(tab+1, out);
+        }
+    };
+    
+    class ReturnStmt : public Stmt
+    {
+    public:
+        ReturnStmt(Expr* e): expr(e){}
+    private:
+        Expr* expr;
+    public:
+        virtual void dump(int tab=0, std::ostream& out = std::cout)
+        {
+            tabs(tab, out);
+            out << "ReturnStmt\n";
+            expr->dump(tab+1, out);
         }
     };
     

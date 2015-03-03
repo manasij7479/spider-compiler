@@ -1,5 +1,5 @@
 spc : lex.yy.c main.cpp Callbacks.hpp
-	g++ lex.yy.c main.cpp -lfl -std=c++14 -o spc -g
+	g++ lex.yy.c main.cpp -lfl -std=c++1y -o spc -g
 	
 lex.yy.c: spider.lex
 	flex spider.lex
