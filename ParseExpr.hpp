@@ -77,7 +77,7 @@ namespace spc
         auto f = Sequence
         (
             {
-                parsePrefixSymbol, 
+//                 parsePrefixSymbol, 
                 hook(parseIdentifierExpr, id),
                 hook(parseExprList, list)
             }
@@ -107,8 +107,9 @@ namespace spc
             {
                 parseIntLiteralExpr,
                 parseStringLiteralExpr,
+                parsePrefixCallExpr, // Would benefit from memoization
                 parseIdentifierExpr,
-                parsePrefixCallExpr
+                
             },
             "Expected Expression."
         )
