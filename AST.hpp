@@ -2,21 +2,19 @@
 #define AST_HPP
 #include "TokenTypes.hpp"
 #include <iostream>
+#include <vector>
 namespace spc
 {
-    void tabs(int t, std::ostream& out = std::cout)
-    {
-        while(t--)
-            out << '\t';
-    }
+    class Sema;
+    void tabs(int t, std::ostream& out = std::cout);
+    
     class ASTNode
     {
     public:
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out<<"<EMPTY NODE>\n";
-        }
+        ASTNode();
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    protected:
+        Sema* sema;
     };
     class ASTNodeVector : public ASTNode
     {
@@ -26,19 +24,7 @@ namespace spc
         std::vector<ASTNode*> data;
     public:
         auto getData(){return data;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "Node Vector\n";
-            for (auto node : data)
-                if(node != nullptr)
-                    node->dump(tab+1, out);
-                else
-                {
-                    tabs(tab+1, out);
-                    out << "NULL\n";
-                }
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     class Expr : public ASTNode
     {
@@ -54,11 +40,7 @@ namespace spc
         IdentifierToken* id;
     public:
         auto getToken(){return id;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "Identifier: " << id->data << "\n";
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     class IntLiteralExpr: public Expr
     {
@@ -68,11 +50,7 @@ namespace spc
         IntLiteralToken* i;
     public:
         auto getToken(){return i;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "Int Literal: " << i->data << "\n";
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     class StringLiteralExpr: public Expr
     {
@@ -82,11 +60,7 @@ namespace spc
         StringLiteralToken* s;
     public:
         auto getToken(){return s;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "String Literal: " << s->data << "\n";
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class ExprList : public Expr
@@ -97,38 +71,20 @@ namespace spc
         std::vector<Expr*> data;
     public:
         auto getData(){return data;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "Expression List\n";
-            for (auto node : data)
-                if(node)
-                    node->dump(tab+1, out);
-                else
-                {
-                    tabs(tab+1);
-                    out << "NULL" << std::endl;
-                }
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class CallExpr : public Expr
     {
     public:
-        CallExpr(IdExpr* id, ExprList* el):fname(id), args(el){}
+        CallExpr(IdExpr* id, ExprList* el);
     private:
         IdExpr* fname;
         ExprList* args;
     public:
         auto getCaller(){return fname;}
         auto getArgs(){return args;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "Prefix Call Expression\n";
-            fname->dump(tab+1, out);
-            args->dump(tab+1, out);
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
       
     class Stmt : public ASTNode
@@ -139,47 +95,32 @@ namespace spc
     class AssignStmt : public Stmt
     {
     public:
-        AssignStmt(IdExpr* lv, Expr* rv):lvalue(lv), rvalue(rv){}
+        AssignStmt(IdExpr* lv, Expr* rv);
     private:
         IdExpr* lvalue;
         Expr* rvalue;
     public:
         auto getLvalue(){return lvalue;}
         auto getRvalue(){return rvalue;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "AssignStmt\n";
-            tabs(tab, out);
-            out << "Lvalue\n";
-            lvalue->dump(tab+1, out);
-            tabs(tab, out);
-            out << "Rvalue\n";
-            rvalue->dump(tab+1, out);
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class DeclStmt : public Stmt
     {
         //there will be semantic difference
     public:
-        DeclStmt(AssignStmt* as):stmt(as){}
+        DeclStmt(AssignStmt* as);
     private:
         AssignStmt* stmt;
     public:
         auto getAssignStmt(){return stmt;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "DeclStmt\n";
-            stmt->dump(tab+1, out);
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class IfStmt : public Stmt
     {
     public:
-        IfStmt(Expr* c, Stmt* t, Stmt* f): condition(c), trueblock(t), falseblock(f){}
+        IfStmt(Expr* c, Stmt* t, Stmt* f);
     private:
         Expr* condition;
         Stmt* trueblock;
@@ -188,34 +129,20 @@ namespace spc
         auto getCondition(){return condition;}
         auto getTrueBlock(){return trueblock;}
         auto getFalseBlock(){return falseblock;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "IfStmt\n";
-            condition->dump(tab+1, out);
-            trueblock->dump(tab+1, out);
-            if (falseblock)
-                falseblock->dump(tab+1, out);
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class WhileStmt : public Stmt
     {
     public:
-        WhileStmt(Expr* c, Stmt* b): condition(c), block(b){}
+        WhileStmt(Expr* c, Stmt* b);
     private:
         Expr* condition;
         Stmt* block;
     public:
         auto getCondition(){return condition;}
         auto getBlock(){return block;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "WhileStmt\n";
-            condition->dump(tab+1, out);
-            block->dump(tab+1, out);
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class StmtBlock : public Stmt
@@ -226,13 +153,7 @@ namespace spc
         std::vector<Stmt*> data;
     public:
         auto getData(){return data;}
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "StmtBlock\n";
-            for (auto s : data)
-                s->dump(tab+1, out);
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class TypeDefinition : public ASTNode
@@ -244,40 +165,18 @@ namespace spc
         std::vector<TypeDefinition*> data;
         bool is_array;
     public:
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "TypeDefinition\n";
-            tabs(tab, out);
-            if (id)
-                id->dump(tab+1, out);
-            else
-            {
-                tabs(tab);
-                out << "Array: " << is_array<<"\n";
-                for(auto td: data)
-                {
-                    td->dump(tab+1, out);
-                }
-            }
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class TypeDefinitionStmt: public Stmt
     {
     public:
-        TypeDefinitionStmt(IdExpr* i, TypeDefinition* td): id(i), def(td){}
+        TypeDefinitionStmt(IdExpr* i, TypeDefinition* td);
     private:
         IdExpr* id;
         TypeDefinition* def;
     public:
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "TypeDefinitionStmt\n";
-            id->dump(tab+1, out);
-            def->dump(tab+1, out);
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
     class ReturnStmt : public Stmt
@@ -287,12 +186,7 @@ namespace spc
     private:
         Expr* expr;
     public:
-        virtual void dump(int tab=0, std::ostream& out = std::cout)
-        {
-            tabs(tab, out);
-            out << "ReturnStmt\n";
-            expr->dump(tab+1, out);
-        }
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
 }
