@@ -11,7 +11,7 @@ namespace spc
     class ASTNode
     {
     public:
-        ASTNode();
+        ASTNode(Sema* s = nullptr);
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     protected:
         Sema* sema;
@@ -28,14 +28,24 @@ namespace spc
     };
     class Expr : public ASTNode
     {
-        // ?
+    public:
+        enum class Type
+        {
+            Id,
+            Int,
+            String,
+            List,
+            Call
+        };
+        Expr(Type t):type(t){}
+        Type type;
     };
-    
+    typedef Expr::Type EType;
     
     class IdExpr : public Expr
     {
     public:
-        IdExpr(IdentifierToken* id_):id(id_){}
+        IdExpr(IdentifierToken* id_):Expr(EType::Id),id(id_){}
     private:
         IdentifierToken* id;
     public:
@@ -45,7 +55,7 @@ namespace spc
     class IntLiteralExpr: public Expr
     {
     public:
-        IntLiteralExpr(IntLiteralToken* it):i(it){}
+        IntLiteralExpr(IntLiteralToken* it):Expr(EType::Int),i(it){}
     private:
         IntLiteralToken* i;
     public:
@@ -55,7 +65,7 @@ namespace spc
     class StringLiteralExpr: public Expr
     {
     public:
-        StringLiteralExpr(StringLiteralToken* st):s(st){}
+        StringLiteralExpr(StringLiteralToken* st):Expr(EType::String),s(st){}
     private:
         StringLiteralToken* s;
     public:
@@ -66,7 +76,7 @@ namespace spc
     class ExprList : public Expr
     {
     public:
-        ExprList(std::vector<Expr*> el): data(el){}
+        ExprList(std::vector<Expr*> el):Expr(EType::List), data(el){}
     private:
         std::vector<Expr*> data;
     public:
@@ -77,12 +87,12 @@ namespace spc
     class CallExpr : public Expr
     {
     public:
-        CallExpr(IdExpr* id, ExprList* el);
+        CallExpr(IdExpr* id, ExprList* el):Expr(EType::Call), fname(id), args(el){}
     private:
         IdExpr* fname;
         ExprList* args;
     public:
-        auto getCaller(){return fname;}
+        auto getCallee(){return fname;}
         auto getArgs(){return args;}
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };

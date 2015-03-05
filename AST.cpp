@@ -2,9 +2,12 @@
 #include "Sema.hpp"
 namespace spc
 {
-    ASTNode::ASTNode()
+    ASTNode::ASTNode(Sema* s)
     {
-        sema = new Sema;
+        if (!s)
+            sema = new Sema;
+        else
+            sema = s;
     }
     void ASTNode::dump(int tab, std::ostream& out)
     {
@@ -144,11 +147,6 @@ namespace spc
     
     
     TypeDefinitionStmt::TypeDefinitionStmt(IdExpr* i, TypeDefinition* td): id(i), def(td)
-    {
-        sema->process(this);
-    }
-    
-    CallExpr::CallExpr(IdExpr* id, ExprList* el):fname(id), args(el)
     {
         sema->process(this);
     }
