@@ -19,6 +19,8 @@ namespace spc
             {
                 case SType::Decl: process(static_cast<DeclStmt*>(s)); break;
                 case SType::Assign: process(static_cast<AssignStmt*>(s)); break;
+                case SType::If: process(static_cast<IfStmt*>(s)); break;
+                case SType::Block: process(static_cast<StmtBlock*>(s)); break;
             }
         }
         void process(DeclStmt* ds)
@@ -35,10 +37,29 @@ namespace spc
             std::string s = process(as->getRvalue());
             output("assign "+ id->getToken()->data + " " + s); 
         }
+        void process(StmtBlock* b)
+        {
+            output("{");
+            for (auto s : b->getData())
+                process(s);
+            output("}");
+        }
         void process(IfStmt* ifs)
         {
-            //codegen
             //anything else?
+            Expr* e = ifs->getCondition();
+            std::string s = process(e);
+            output("if " + s);
+            Stmt* tb = ifs->getTrueBlock();
+            process(tb);
+            Stmt* fb = ifs->getFalseBlock();
+            if(fb)
+            {
+                output("not " + s);
+                output("if _");
+                process(fb);
+            }
+            
         }
         void process(WhileStmt* ws)
         {
