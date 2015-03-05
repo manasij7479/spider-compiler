@@ -13,15 +13,27 @@ namespace spc
         }
         //only process the statements from parser
         //invoke the expre process' from them
+        void process(Stmt* s)
+        {
+            switch(s->type)
+            {
+                case SType::Decl: process(static_cast<DeclStmt*>(s)); break;
+                case SType::Assign: process(static_cast<AssignStmt*>(s)); break;
+            }
+        }
         void process(DeclStmt* ds)
         {
-            //process expr
-            //insert id into symbol table
+            //TODO insert id into symbol table
+            IdExpr* id = ds->getAssignStmt()->getLvalue();
+            std::string s = process(ds->getAssignStmt()->getRvalue());
+            output("let "+ id->getToken()->data + " " + s);
         }
         void process(AssignStmt* as)
         {
-            //precess expr
             //type check
+            IdExpr* id = as->getLvalue();
+            std::string s = process(as->getRvalue());
+            output("assign "+ id->getToken()->data + " " + s); 
         }
         void process(IfStmt* ifs)
         {
@@ -62,9 +74,11 @@ namespace spc
             output(os.str());
             return s;
         }
-        void output(std::string s)
+        void output(std::string s, bool endl = true)
         {
-            std::cout << s << std::endl;
+            std::cout << s;
+            if (endl)
+                std::cout << std::endl;
         }
         std::string getTempName()
         {

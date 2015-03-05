@@ -99,8 +99,21 @@ namespace spc
       
     class Stmt : public ASTNode
     {
-        
+    public:
+        enum class Type
+        {
+            Assign,
+            Decl,
+            While,
+            If,
+            Block,
+            Type,
+            Ret
+        };
+        Stmt(Type t):type(t){}
+        Type type;
     };
+    typedef Stmt::Type SType;
     
     class AssignStmt : public Stmt
     {
@@ -158,7 +171,7 @@ namespace spc
     class StmtBlock : public Stmt
     {
     public:
-        StmtBlock(std::vector<Stmt*> d):data(d){}
+        StmtBlock(std::vector<Stmt*> d):Stmt(SType::Block), data(d){}
     private:
         std::vector<Stmt*> data;
     public:
@@ -192,7 +205,7 @@ namespace spc
     class ReturnStmt : public Stmt
     {
     public:
-        ReturnStmt(Expr* e): expr(e){}
+        ReturnStmt(Expr* e):Stmt(SType::Ret), expr(e){}
     private:
         Expr* expr;
     public:

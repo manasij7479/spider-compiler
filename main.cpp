@@ -11,7 +11,7 @@ int main()
 {
     yylex();
     spc::Tokens.push_back(new spc::EOFToken);
-    auto p = spc::parsePrefixCallExpr(0);
+    auto p = spc::parseStmt(0);
     if (!p)
         std::cerr << p.getError() <<std::endl;
     else
@@ -20,6 +20,6 @@ int main()
         if (p.get() != nullptr)
             p.get()->dump();
         spc::Sema s;
-        s.process(static_cast<spc::Expr*>(p.get()));
+        s.process(static_cast<spc::Stmt*>(p.get()));
     }
 }

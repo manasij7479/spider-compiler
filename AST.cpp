@@ -146,29 +146,29 @@ namespace spc
     }
     
     
-    TypeDefinitionStmt::TypeDefinitionStmt(IdExpr* i, TypeDefinition* td): id(i), def(td)
+    TypeDefinitionStmt::TypeDefinitionStmt(IdExpr* i, TypeDefinition* td):Stmt(SType::Type), id(i), def(td)
     {
-        sema->process(this);
+//         sema->process(this);
     }
     
-    AssignStmt::AssignStmt(IdExpr* lv, Expr* rv):lvalue(lv), rvalue(rv)
+    AssignStmt::AssignStmt(IdExpr* lv, Expr* rv):Stmt(SType::Assign), lvalue(lv), rvalue(rv)
     {
-        sema->process(this);
+//         sema->process(this);
     }
     
-    DeclStmt::DeclStmt(AssignStmt* as):stmt(as)
+    DeclStmt::DeclStmt(AssignStmt* as):Stmt(SType::Decl),stmt(as)
     {
-        sema->process(this);
+//         sema->process(this);
     }
     
-    IfStmt::IfStmt(Expr* c, Stmt* t, Stmt* f): condition(c), trueblock(t), falseblock(f)
+    IfStmt::IfStmt(Expr* c, Stmt* t, Stmt* f):Stmt(SType::If), condition(c), trueblock(t), falseblock(f)
     {
-        sema->process(this);
+//         sema->process(this);
     }
     
-    WhileStmt::WhileStmt(Expr* c, Stmt* b): condition(c), block(b)
+    WhileStmt::WhileStmt(Expr* c, Stmt* b):Stmt(SType::While), condition(c), block(b)
     {
-        sema->process(this);
+//         sema->process(this);
     }
     
     void tabs(int t, std::ostream& out)
