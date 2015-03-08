@@ -20,6 +20,7 @@ namespace spc
                 case SType::Decl: process(static_cast<DeclStmt*>(s)); break;
                 case SType::Assign: process(static_cast<AssignStmt*>(s)); break;
                 case SType::If: process(static_cast<IfStmt*>(s)); break;
+                case SType::While: process(static_cast<WhileStmt*>(s)); break;
                 case SType::Block: process(static_cast<StmtBlock*>(s)); break;
             }
         }
@@ -63,8 +64,11 @@ namespace spc
         }
         void process(WhileStmt* ws)
         {
-            //codegen
             //anything else?
+            Expr* e = ws->getCondition();
+            std::string s = process(e);
+            output("while " + s);
+            process(ws->getBlock());
         }
         
         void process(TypeDefinitionStmt* tds)

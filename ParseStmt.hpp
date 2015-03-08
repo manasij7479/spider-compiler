@@ -154,36 +154,45 @@ namespace spc
             return ParseResult(new TypeDefinitionStmt(id, td), result.nextIndex());
     }
     
-    ParseResult parseReturnStmt(int index)
+    /*
+     * functionarg <- (identifier identifier)
+     * The second identifier will be converted to a TypeDefinition once we have a sophisticated typesystem
+     */
+    ParseResult parseFunctionArg(int index)
     {
-        Expr* e;
-        auto f = Sequence({parseReturn, hook(parseExpr, e), parseSemicolon});
+        auto f = Sequence({parseOpenParen, parseIdentifierExpr, parseIdentifierExpr, parseCloseParen});
         auto result = f(index);
-        if (!result)
-            return result;
-        else
-            return ParseResult(new ReturnStmt(e), result.nextIndex());
+        return result;
     }
+    /*
+     *  functionproto <- function identifier functionarg* = functionarg
+     */
+    ParseResult parseFunctionProtoType(int index)
+    {
+        auto f = Sequence({parseFunction, parseIdentifierExpr, ZeroOrMore(parseFunctionArg), parseEqualSymbol, parseFunctionArg});
+        auto result = f(index);
+        return result;
+    }
+    
+    /*
+     * functiondecl <- functionproto ;
+     */
+    ParseResult parseFunctionDeclaration(int index)
+    {
+        auto f = Sequence({parseFunctionProtoType, parseSemicolon});
+        auto result = f(index);
+        return result;
+    }
+    /*
+     * functiondef <-functionproto  stmtblock
+     */
     ParseResult parseFunctionDefinitionStmt(int index)
     {
-        auto f = Sequence
-        (
-            {
-                parseFunction,
-                parseIdentifierExpr,
-                parseExprList,
-                parseTypeDefinition,
-                parseStmtBlock
-            }
-        );
+        auto f = Sequence({parseFunctionProtoType, parseStmtBlock});
         auto result = f(index);
-        if (!result)
-            return result;
-        else
-            return result;
-        ///TODO : proper result and AST node
+        return result;
     }
-
+    
     ParseResult parseStmt(int index)
     {
         return LinearChoice
