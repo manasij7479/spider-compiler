@@ -212,5 +212,19 @@ namespace spc
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
+//     template <typename T>
+//     T* getAs(ASTNode* node ,std::vector<int> loc={})
+//     {
+//         if (loc.empty())
+//             return static_cast<T*>(node);
+//         ASTNodeVector* v = getAs<ASTNodeVector>(node);
+//         if (loc.size() == 1)
+//             return static_cast<T*>(v->getData()[loc[0]]);
+//         
+//         int x = loc[0];
+//         loc.erase(loc.begin());
+//         return getAs<T>(getAs<ASTNode>(v, {x}) ,loc);
+//     }
+    
 }
 #endif

@@ -116,7 +116,7 @@ namespace spc
                             Optional(parseAlpha)
                     }),
                     hook(parseIdentifierExpr, id)
-            });
+            }, "Expected Type Definition");
         auto result = f(index);
         if (!result)
             return result;
@@ -162,6 +162,9 @@ namespace spc
     {
         auto f = Sequence({parseOpenParen, parseIdentifierExpr, parseIdentifierExpr, parseCloseParen});
         auto result = f(index);
+        std::cerr<< "HERE\n";
+//         getAs<IdExpr>(result.get(), {1})->dump();
+        std::cerr<< "HERE\n";
         return result;
     }
     /*
@@ -204,7 +207,7 @@ namespace spc
                 parseWhileStmt,
                 parseStmtBlock,
             },
-            "Expected Expression."
+            "Expected Statement"
         )
         (index);
     }

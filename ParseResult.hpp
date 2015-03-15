@@ -1,6 +1,8 @@
 #ifndef PARSE_RESULT_HPP
 #define PARSE_RESULT_HPP
 #include "AST.hpp"
+#include <vector>
+#include <sstream>
 namespace spc
 {
     class ParseResult
@@ -39,5 +41,13 @@ namespace spc
         std::string error;
         int index;
     };
+    ParseResult concatErrors(std::vector<ParseResult> input, std::string delim = "\n", std::string end = "END")
+    {
+        std::ostringstream out;
+        for(uint i = 0; i < input.size() - 1; ++i)
+            out << input[i].getError() << delim;
+        out << input[input.size() - 1].getError() << end;
+        return ParseResult(out.str());
+    }
 }
 #endif
