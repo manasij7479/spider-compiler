@@ -22,6 +22,7 @@ namespace spc
                 case SType::If: process(static_cast<IfStmt*>(s)); break;
                 case SType::While: process(static_cast<WhileStmt*>(s)); break;
                 case SType::Block: process(static_cast<StmtBlock*>(s)); break;
+                case SType::FDef: process(static_cast<FunctionDefinition*>(s)); break;
             }
         }
         void process(DeclStmt* ds)
@@ -76,8 +77,21 @@ namespace spc
             //insert type
             
         }
-        //void process(FunctionDefinitionStmt* fd);
-        
+        void process(FunctionDefinition* fd)
+        {
+            std::ostringstream out;
+            out << "function ";
+            out << fd->getPrototype()->getName()->getToken()->data << " ";
+            out << fd->getPrototype()->getReturnArg()->getName()->getToken()->data << " ";
+            out << fd->getPrototype()->getReturnArg()->getTypeName()->getToken()->data << " ";
+            for (FunctionArg* arg : fd->getPrototype()->getArgs())
+            {
+                out << arg->getName()->getToken()->data << " ";
+                out << arg->getTypeName()->getToken()->data << " ";
+            }
+            output(out.str());
+            process(fd->getBlock());
+        }
         std::string process(Expr* e)
         {
             switch (e->type)

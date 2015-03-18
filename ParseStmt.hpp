@@ -160,21 +160,31 @@ namespace spc
      */
     ParseResult parseFunctionArg(int index)
     {
-        auto f = Sequence({parseOpenParen, parseIdentifierExpr, parseIdentifierExpr, parseCloseParen});
+        IdExpr *name, *type;
+        auto f = Sequence({parseOpenParen, hook(parseIdentifierExpr, name), hook(parseIdentifierExpr, type), parseCloseParen});
         auto result = f(index);
-        std::cerr<< "HERE\n";
-//         getAs<IdExpr>(result.get(), {1})->dump();
-        std::cerr<< "HERE\n";
-        return result;
+        if (!result)
+            return result;
+        else
+            return ParseResult(new FunctionArg(name, type), result.nextIndex());
     }
     /*
      *  functionproto <- function identifier functionarg* = functionarg
      */
     ParseResult parseFunctionProtoType(int index)
     {
-        auto f = Sequence({parseFunction, parseIdentifierExpr, ZeroOrMore(parseFunctionArg), parseEqualSymbol, parseFunctionArg});
+        IdExpr* id;
+        FunctionArg* ret;
+        auto f = Sequence({parseFunction, hook(parseIdentifierExpr, id), ZeroOrMore(parseFunctionArg), parseEqualSymbol, hook(parseFunctionArg, ret)});
         auto result = f(index);
-        return result;
+        if(!result)
+            return result;
+        ASTNodeVector* v = static_cast<ASTNodeVector*>(result.get());
+        std::vector<FunctionArg*> data;
+        for (auto x : static_cast<ASTNodeVector*>(v->getData()[2])->getData())
+            data.push_back(static_cast<FunctionArg*>(x));
+        
+        return ParseResult(new FunctionPrototype(id, ret, data), result.nextIndex());
     }
     
     /*
@@ -191,9 +201,13 @@ namespace spc
      */
     ParseResult parseFunctionDefinitionStmt(int index)
     {
-        auto f = Sequence({parseFunctionProtoType, parseStmtBlock});
+        FunctionPrototype* proto;
+        StmtBlock* block;
+        auto f = Sequence({hook(parseFunctionProtoType, proto), hook(parseStmtBlock, block)});
         auto result = f(index);
-        return result;
+        if (!result)
+            return result;
+        else return ParseResult(new FunctionDefinition(proto, block), result.nextIndex());
     }
     
     ParseResult parseStmt(int index)

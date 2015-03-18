@@ -138,13 +138,48 @@ namespace spc
         def->dump(tab+1, out);
     }
     
-    void ReturnStmt::dump(int tab, std::ostream& out)
+    FunctionArg::FunctionArg(IdExpr* name_, IdExpr* type_) : name(name_), type(type_)
+    {
+        
+    }
+
+    void FunctionArg::dump(int tab, std::ostream& out)
     {
         tabs(tab, out);
-        out << "ReturnStmt\n";
-        expr->dump(tab+1, out);
+        out << "FunctionArg\n";
+        name->dump(tab+1, out);
+        type->dump(tab+1, out);
+    }
+
+    FunctionPrototype::FunctionPrototype(IdExpr* id_, FunctionArg* ret_, std::vector< FunctionArg* > args_): id(id_), ret(ret_), args(args_)
+    {
+
     }
     
+    void FunctionPrototype::dump(int tab, std::ostream& out)
+    {
+        tabs(tab, out);
+        out << "FunctionProto\n";
+        ret->dump(tab+1, out);
+        for (auto arg: args)
+            arg->dump(tab+1, out);
+    }    
+    FunctionDefinition::FunctionDefinition(FunctionPrototype* proto_, StmtBlock* block_): Stmt(SType::FDef), proto(proto_), block(block_)
+    {
+
+    }
+    void FunctionDefinition::dump(int tab, std::ostream& out)
+    {
+        tabs(tab, out);
+        out << "FunctionDef\n";
+        proto->dump(tab+1, out);
+        block->dump(tab+1, out);
+    }
+
+
+    
+
+
     
     TypeDefinitionStmt::TypeDefinitionStmt(IdExpr* i, TypeDefinition* td):Stmt(SType::Type), id(i), def(td)
     {

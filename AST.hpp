@@ -108,7 +108,7 @@ namespace spc
             If,
             Block,
             Type,
-            Ret
+            FDef
         };
         Stmt(Type t):type(t){}
         Type type;
@@ -202,15 +202,15 @@ namespace spc
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     
-    class ReturnStmt : public Stmt
-    {
-    public:
-        ReturnStmt(Expr* e):Stmt(SType::Ret), expr(e){}
-    private:
-        Expr* expr;
-    public:
-        virtual void dump(int tab=0, std::ostream& out = std::cout);
-    };
+//     class ReturnStmt : public Stmt
+//     {
+//     public:
+//         ReturnStmt(Expr* e):Stmt(SType::Ret), expr(e){}
+//     private:
+//         Expr* expr;
+//     public:
+//         virtual void dump(int tab=0, std::ostream& out = std::cout);
+//     };
     
 //     template <typename T>
 //     T* getAs(ASTNode* node ,std::vector<int> loc={})
@@ -225,6 +225,43 @@ namespace spc
 //         loc.erase(loc.begin());
 //         return getAs<T>(getAs<ASTNode>(v, {x}) ,loc);
 //     }
-    
+    class FunctionArg: public ASTNode
+    {
+    public:
+        FunctionArg(IdExpr* name_, IdExpr* type_);
+        auto getName(){return name;}
+        auto getTypeName(){return type;}
+    private:
+        IdExpr* name;
+        IdExpr* type;
+    public:
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+    class FunctionPrototype: public ASTNode
+    {
+    public:
+        FunctionPrototype(IdExpr* id_, FunctionArg* ret_, std::vector<FunctionArg*> args_);
+        auto getName(){return id;}
+        auto getReturnArg(){return ret;}
+        auto getArgs(){return args;}
+    private:
+        IdExpr* id;
+        FunctionArg* ret;
+        std::vector<FunctionArg*> args;
+    public:
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+    class FunctionDefinition: public Stmt
+    {
+    public:
+        FunctionDefinition(FunctionPrototype* proto_, StmtBlock* block_);
+        auto getPrototype(){return proto;}
+        auto getBlock(){return block;}
+    private:
+        FunctionPrototype* proto;
+        StmtBlock* block;
+    public:
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
 }
 #endif
