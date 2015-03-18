@@ -220,6 +220,7 @@ namespace spc
                 parseIfStmt,
                 parseWhileStmt,
                 parseStmtBlock,
+                parseFunctionDefinitionStmt
             },
             "Expected Statement"
         )
