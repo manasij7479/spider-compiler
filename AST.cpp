@@ -176,6 +176,17 @@ namespace spc
         block->dump(tab+1, out);
     }
 
+    void FunctionDeclaration::dump(int tab, std::ostream& out)
+    {
+        tabs(tab, out);
+        out << "FunctionDecl\n";
+        proto->dump(tab+1, out);
+    }
+    FunctionDeclaration::FunctionDeclaration(FunctionPrototype* proto_) : Stmt(SType::FDecl), proto(proto_)
+    {
+
+    }
+
 
     
 

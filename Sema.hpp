@@ -25,6 +25,7 @@ namespace spc
                 case SType::While: process(static_cast<WhileStmt*>(s)); break;
                 case SType::Block: process(static_cast<StmtBlock*>(s)); break;
                 case SType::FDef: process(static_cast<FunctionDefinition*>(s)); break;
+                case SType::FDecl: process(static_cast<FunctionDeclaration*>(s)); break;
             }
         }
         void process(DeclStmt* ds)
@@ -81,19 +82,34 @@ namespace spc
             //insert type
             
         }
-        void process(FunctionDefinition* fd)
+        void process(FunctionPrototype* fp, bool codegen = false)
         {
             std::ostringstream out;
             out << "function ";
-            out << fd->getPrototype()->getName()->getToken()->data << " ";
-            out << fd->getPrototype()->getReturnArg()->getName()->getToken()->data << " ";
-            out << fd->getPrototype()->getReturnArg()->getTypeName()->getToken()->data << " ";
-            for (FunctionArg* arg : fd->getPrototype()->getArgs())
+            std::string fname = fp->getName()->getToken()->data;
+            std::string rettype = fp->getReturnArg()->getTypeName()->getToken()->data;
+            std::vector<std::string> mapdata({rettype});
+            out << fname << " ";
+            out << fp->getReturnArg()->getName()->getToken()->data << " ";
+            out << rettype << " ";
+            for (FunctionArg* arg : fp->getArgs())
             {
+                std::string argtype = arg->getTypeName()->getToken()->data;
                 out << arg->getName()->getToken()->data << " ";
-                out << arg->getTypeName()->getToken()->data << " ";
+                out << argtype << " ";
+                mapdata.push_back(argtype);
             }
-            output(out.str());
+            if (codegen)
+                output(out.str());
+            m_FunctionMap[fname] = mapdata;
+        }
+        void process(FunctionDeclaration* fd)
+        {
+            process(fd->getPrototype());
+        }
+        void process(FunctionDefinition* fd)
+        {
+            process(fd->getPrototype(), true /*codegen*/);
             process(fd->getBlock());
         }
         std::string convert_into_function(Expr* e) // returns function name
@@ -156,8 +172,9 @@ namespace spc
         
         int counter;
         std::vector<std::ostream*> output_stack;
-        std::map<std::string, std::string> m_TypeMap;
-        
+        std::map<std::string, std::string> m_TypeMap; 
+        // may need a more complicated hierarchical structure
+        std::map<std::string, std::vector<std::string>> m_FunctionMap;
         std::string getType(std::string var)
         {
             if (m_TypeMap.find(var) != m_TypeMap.end())
@@ -166,9 +183,11 @@ namespace spc
         }
         std::string getReturnType(std::string f)
         {
-            return "int";
-            //TODO
+            if (m_FunctionMap.find(f) != m_FunctionMap.end())
+                return m_FunctionMap[f][0];
+            else throw std::runtime_error("function : '" + f + "' Not found in table.");
         }
     };
 }
 #endif
+

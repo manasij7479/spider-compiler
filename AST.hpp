@@ -108,7 +108,8 @@ namespace spc
             If,
             Block,
             Type,
-            FDef
+            FDef,
+            FDecl
         };
         Stmt(Type t):type(t){}
         Type type;
@@ -260,6 +261,17 @@ namespace spc
     private:
         FunctionPrototype* proto;
         StmtBlock* block;
+    public:
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+    
+    class FunctionDeclaration: public Stmt
+    {
+    public:
+        FunctionDeclaration(FunctionPrototype* proto_);
+        auto getPrototype(){return proto;}
+    private:
+        FunctionPrototype* proto;
     public:
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };

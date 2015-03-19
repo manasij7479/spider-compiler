@@ -190,11 +190,14 @@ namespace spc
     /*
      * functiondecl <- functionproto ;
      */
-    ParseResult parseFunctionDeclaration(int index)
+    ParseResult parseFunctionDeclarationStmt(int index)
     {
-        auto f = Sequence({parseFunctionProtoType, parseSemicolon});
+        FunctionPrototype* p;
+        auto f = Sequence({hook(parseFunctionProtoType, p), parseSemicolon});
         auto result = f(index);
-        return result;
+        if (!result)
+            return result;
+        else return ParseResult(new FunctionDeclaration(p), result.nextIndex());
     }
     /*
      * functiondef <-functionproto  stmtblock
@@ -220,6 +223,7 @@ namespace spc
                 parseIfStmt,
                 parseWhileStmt,
                 parseStmtBlock,
+                parseFunctionDeclarationStmt,
                 parseFunctionDefinitionStmt
             },
             "Expected Statement"
