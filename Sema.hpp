@@ -26,6 +26,7 @@ namespace spc
                 case SType::Block: process(static_cast<StmtBlock*>(s)); break;
                 case SType::FDef: process(static_cast<FunctionDefinition*>(s)); break;
                 case SType::FDecl: process(static_cast<FunctionDeclaration*>(s)); break;
+                case SType::VCall: process(static_cast<VoidCallStmt*>(s)); break;
             }
         }
         void process(DeclStmt* ds)
@@ -102,6 +103,12 @@ namespace spc
             if (codegen)
                 output(out.str());
             m_FunctionMap[fname] = mapdata;
+        }
+        void process(VoidCallStmt* vstmt)
+        {
+            auto p = process(vstmt->getCallExpr());
+            //ignore the result for now
+            //needs checking, maybe warnings too if type is not void
         }
         void process(FunctionDeclaration* fd)
         {
@@ -190,4 +197,3 @@ namespace spc
     };
 }
 #endif
-
