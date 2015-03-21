@@ -187,6 +187,17 @@ namespace spc
 
     }
 
+    VoidCallStmt::VoidCallStmt(CallExpr* c): Stmt(SType::VCall), expr(c) 
+    {
+
+    }
+
+    void VoidCallStmt::dump(int tab, std::ostream& out)
+    {
+        tabs(tab, out);
+        out << "VoidCallStmt\n";
+        expr->dump(tab+1, out);
+    }
 
     
 

@@ -109,7 +109,8 @@ namespace spc
             Block,
             Type,
             FDef,
-            FDecl
+            FDecl,
+            VCall
         };
         Stmt(Type t):type(t){}
         Type type;
@@ -166,6 +167,17 @@ namespace spc
     public:
         auto getCondition(){return condition;}
         auto getBlock(){return block;}
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+    
+    class VoidCallStmt : public Stmt
+    {
+    public:
+        VoidCallStmt(CallExpr* c);
+    private:
+        CallExpr* expr;
+    public:
+        auto getCallExpr(){return expr;}
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     

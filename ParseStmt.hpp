@@ -213,6 +213,19 @@ namespace spc
         else return ParseResult(new FunctionDefinition(proto, block), result.nextIndex());
     }
     
+    /*
+     * voidcallstmt <- prefixcallexpr;
+     */
+    ParseResult parseVoidCallStmt(int index)
+    {
+        CallExpr* ce;
+        auto f  = Sequence({hook(parsePrefixCallExpr, ce), parseSemicolon});
+        auto result = f(index);
+        if (!result)
+            return result;
+        else return ParseResult(new VoidCallStmt(ce), result.nextIndex());
+    }
+    
     ParseResult parseStmt(int index)
     {
         return LinearChoice
@@ -223,6 +236,7 @@ namespace spc
                 parseIfStmt,
                 parseWhileStmt,
                 parseStmtBlock,
+                parseVoidCallStmt,
                 parseFunctionDeclarationStmt,
                 parseFunctionDefinitionStmt
             },
