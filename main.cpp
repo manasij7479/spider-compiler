@@ -16,9 +16,9 @@ int main()
         std::cerr << p.getError() <<std::endl;
     else
     {
-        std::cout << "Parsed" << std::endl;
-        if (p.get() != nullptr)
-            p.get()->dump();
+//         std::cout << "Parsed" << std::endl;
+//         if (p.get() != nullptr)
+//             p.get()->dump();
         spc::Sema s;
         s.process(static_cast<spc::Stmt*>(p.get()));
     }
