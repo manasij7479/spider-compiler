@@ -13,7 +13,7 @@ namespace spc
         void pop(){data.pop_back();}
         std::pair<bool, Type> lookup(std::string name)
         {
-            for (uint i = data.size()-1; i >=0; --i)
+            for (int i = data.size()-1; i >=0; --i)
             {
                 auto p = data[i].lookup(name);
                 if (p.first == true)
