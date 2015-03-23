@@ -155,7 +155,10 @@ namespace spc
         {
             std::ostringstream os;
             std::string s = table.getNewName(ce->getCallee()->getToken()->data);
-            os << "let " << s << ' ';
+            
+            if (getReturnType(ce->getCallee()->getToken()->data) != "void")
+                os << "let " << s << ' ';
+            
             os << ce->getCallee()->getToken()->data << ' ';
             for(auto arg : ce->getArgs()->getData())
                 os << process(arg).first << ' ';
