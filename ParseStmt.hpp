@@ -169,13 +169,13 @@ namespace spc
             return ParseResult(new FunctionArg(name, type), result.nextIndex());
     }
     /*
-     *  functionproto <- function identifier functionarg* = functionarg
+     *  functionproto <- function identifier functionarg* = functionarg?
      */
     ParseResult parseFunctionProtoType(int index)
     {
         IdExpr* id;
-        FunctionArg* ret;
-        auto f = Sequence({parseFunction, hook(parseIdentifierExpr, id), ZeroOrMore(parseFunctionArg), parseEqualSymbol, hook(parseFunctionArg, ret)});
+        FunctionArg* ret = nullptr;
+        auto f = Sequence({parseFunction, hook(parseIdentifierExpr, id), ZeroOrMore(parseFunctionArg), Optional(Sequence({parseEqualSymbol, hook(parseFunctionArg, ret)}))});
         auto result = f(index);
         if(!result)
             return result;

@@ -160,7 +160,13 @@ namespace spc
     {
         tabs(tab, out);
         out << "FunctionProto\n";
-        ret->dump(tab+1, out);
+        if (ret != nullptr)
+            ret->dump(tab+1, out);
+        else 
+        {
+            tabs(tab+1, out);
+            out << "VOID\n";
+        }
         for (auto arg: args)
             arg->dump(tab+1, out);
     }    

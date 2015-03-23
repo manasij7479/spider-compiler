@@ -89,10 +89,15 @@ namespace spc
             std::ostringstream out;
             out << "function ";
             std::string fname = fp->getName()->getToken()->data;
-            std::string rettype = fp->getReturnArg()->getTypeName()->getToken()->data;
+            std::string rettype;
+            if (fp->getReturnArg() != nullptr)
+                rettype = fp->getReturnArg()->getTypeName()->getToken()->data;
+            else rettype = "void";
             std::vector<std::string> mapdata({rettype});
             out << fname << " ";
-            out << fp->getReturnArg()->getName()->getToken()->data << " ";
+            if (fp->getReturnArg() != nullptr)
+                out << fp->getReturnArg()->getName()->getToken()->data << " ";
+            else out << "_placeholder ";
             out << rettype << " ";
             for (FunctionArg* arg : fp->getArgs())
             {
