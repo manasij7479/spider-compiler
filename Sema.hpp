@@ -1,6 +1,7 @@
 #ifndef SEMA_HPP
 #define SEMA_HPP
 #include "AST.hpp"
+#include "SymbolTable.hpp"
 #include <map>
 #include <sstream>
 namespace spc
@@ -10,7 +11,6 @@ namespace spc
     public:
         Sema()
         {
-            counter = 0;
             output_stack.push_back(&std::cout);
         }
         //only process the statements from parser
@@ -34,7 +34,8 @@ namespace spc
             //TODO insert id into symbol table
             IdExpr* id = ds->getAssignStmt()->getLvalue();
             auto p = process(ds->getAssignStmt()->getRvalue());
-            m_TypeMap[id->getToken()->data] = p.second;
+//             m_TypeMap[id->getToken()->data] = p.second;
+            table.insert(id->getToken()->data, p.second);
             output("let "+ id->getToken()->data + " " + p.first);
         }
         void process(AssignStmt* as)
@@ -102,7 +103,7 @@ namespace spc
             }
             if (codegen)
                 output(out.str());
-            m_FunctionMap[fname] = mapdata;
+            table.insert(fname, Type(mapdata));
         }
         void process(VoidCallStmt* vstmt)
         {
@@ -126,35 +127,34 @@ namespace spc
             output_stack.push_back(&temp);
             auto p = process(e);
             output_stack.pop_back();
+            std::string fname = table.getNewName(Type(std::vector<std::string>{p.second.getType()}));
+            std::string result = table.getNewName(Type(p.second.getType()));
             
-            std::string fname = getTempName();
-            std::string result = getTempName();
-            m_TypeMap[result] = p.second;
-            output("function " + fname + " " + result + " " + p.second);
+            output("function " + fname + " " + result + " " + p.second.getType());
             output("{");
             output(temp.str(), false);
             output("let " + result + " " +  p.first);
             output("}");
             return fname;
         }
-        std::pair<std::string, std::string> process(Expr* e)
+        std::pair<std::string, Type> process(Expr* e)
         {
             switch (e->type)
             {
                 case EType::Id : 
                 {
                     auto s = static_cast<IdExpr*>(e)->getToken()->data;
-                    return {s, getType(s)};
+                    return {s, table.lookup(s).second};
                 }
-                case EType::Int : return {"i"+std::to_string(static_cast<IntLiteralExpr*>(e)->getToken()->data), "int"};
-                case EType::String : return {static_cast<StringLiteralExpr*>(e)->getToken()->data,"string"};
+                case EType::Int : return {"i"+std::to_string(static_cast<IntLiteralExpr*>(e)->getToken()->data), Type("int")};
+                case EType::String : return {static_cast<StringLiteralExpr*>(e)->getToken()->data,Type("string")};
                 case EType::Call: return process(static_cast<CallExpr*>(e));
             }
         }
-        std::pair<std::string, std::string> process(CallExpr* ce)
+        std::pair<std::string, Type> process(CallExpr* ce)
         {
             std::ostringstream os;
-            std::string s = getTempName();
+            std::string s = table.getNewName(ce->getCallee()->getToken()->data);
             os << "let " << s << ' ';
             os << ce->getCallee()->getToken()->data << ' ';
             for(auto arg : ce->getArgs()->getData())
@@ -169,30 +169,20 @@ namespace spc
             if (endl)
                 out << std::endl;
         }
-        std::string getTempName()
-        {
-            return "t" + std::to_string(counter++);
-        }
     private:
         //bool type_check(); //decide on the interface!
         //TODO: Symbol Table, Function Sigs, etc.
         
-        int counter;
         std::vector<std::ostream*> output_stack;
-        std::map<std::string, std::string> m_TypeMap; 
-        // may need a more complicated hierarchical structure
-        std::map<std::string, std::vector<std::string>> m_FunctionMap;
-        std::string getType(std::string var)
-        {
-            if (m_TypeMap.find(var) != m_TypeMap.end())
-                return m_TypeMap[var];
-            else throw std::runtime_error("var : '" + var + "' Not found in table.");
-        }
+        SymbolTable table;
         std::string getReturnType(std::string f)
         {
-            if (m_FunctionMap.find(f) != m_FunctionMap.end())
-                return m_FunctionMap[f][0];
-            else throw std::runtime_error("function : '" + f + "' Not found in table.");
+            auto p = table.lookup(f);
+            if (!p.first)
+                throw std::runtime_error("Function: '"+f+"' does not exist.");
+            if (!p.second.isFunction())
+                throw std::runtime_error("'"+f+"' is not a function.");
+            return p.second.getArgTypes()[0];
         }
     };
 }
