@@ -27,6 +27,7 @@ namespace spc
                 case SType::FDef: process(static_cast<FunctionDefinition*>(s)); break;
                 case SType::FDecl: process(static_cast<FunctionDeclaration*>(s)); break;
                 case SType::VCall: process(static_cast<VoidCallStmt*>(s)); break;
+                case SType::Import: process(static_cast<ImportStmt*>(s)); break;
             }
         }
         void process(DeclStmt* ds)
@@ -124,6 +125,11 @@ namespace spc
         {
             process(fd->getPrototype(), true /*codegen*/);
             process(fd->getBlock());
+        }
+        void process(ImportStmt* imp)
+        {
+            std::string filename = imp->getStr()->getToken()->data;
+            output("Placeholder for import '"+filename+"'");
         }
         std::string convert_into_function(Expr* e) // returns function name
         {

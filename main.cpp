@@ -2,11 +2,28 @@
 #include "GlobalState.hpp"
 #include "ParseStmt.hpp"
 #include "Sema.hpp"
+#include <cstdio>
 extern "C" int yylex();
-
-int main()
+extern "C" FILE*   yyin;
+int main(int argc, char** argv)
 {
-    yylex();
+    if (argc != 2)
+    {
+        std::cerr << "Expected Filename or - (for stdin).";
+        return 1;
+    }
+    if (std::string(argv[1]) == "-")
+        yylex();
+    else
+    {
+        yyin = std::fopen(argv[1], "r");
+        if (!yyin)
+        {
+            std::cerr << "Can not open file: " << argv[1];
+            return 1;
+        }
+        yylex();
+    }
     spc::insertToken(new spc::EOFToken);
     auto p = spc::ZeroOrMore(spc::parseStmt)(0);
     
@@ -26,4 +43,5 @@ int main()
             s.process(static_cast<spc::Stmt*>(node));
         }
     }
+    return 0;
 }
