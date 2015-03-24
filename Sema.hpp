@@ -159,14 +159,23 @@ namespace spc
         std::pair<std::string, Type> process(CallExpr* ce)
         {
             std::ostringstream os;
-            std::string s = table.getNewName(ce->getCallee()->getToken()->data);
-            
-            if (getReturnType(ce->getCallee()->getToken()->data) != "void")
+            std::string fname = ce->getCallee()->getToken()->data;
+            std::string s = table.getNewName(getReturnType(fname));
+            auto&& args = getArgTypeList(fname);
+            if (getReturnType(fname) != "void")
                 os << "let " << s << ' ';
             
-            os << ce->getCallee()->getToken()->data << ' ';
-            for(auto arg : ce->getArgs()->getData())
-                os << process(arg).first << ' ';
+            os << fname << ' ';
+//             for(auto arg : ce->getArgs()->getData())
+            if (args.size() != ce->getArgs()->getData().size())
+                throw std::runtime_error("Argument size mismatch, expected '"+std::to_string(args.size())+"' got '"+std::to_string(ce->getArgs()->getData().size()));
+            for(int i = 0 ; i < ce->getArgs()->getData().size(); ++i)
+            {
+                auto p = process(ce->getArgs()->getData()[i]);
+                if (Type(args[i]).isCompatible(p.second.getType()) == false)
+                    throw std::runtime_error("Type Mismatch, expected '"+args[i]+"' got '"+p.second.getType());
+                os << p.first << ' ';
+            }
             output(os.str());
             return {s, getReturnType(ce->getCallee()->getToken()->data)};
         }
@@ -191,6 +200,17 @@ namespace spc
             if (!p.second.isFunction())
                 throw std::runtime_error("'"+f+"' is not a function.");
             return p.second.getArgTypes()[0];
+        }
+        std::vector<std::string> getArgTypeList(std::string f)
+        {
+            auto p = table.lookup(f);
+            if (!p.first)
+                throw std::runtime_error("Function: '"+f+"' does not exist.");
+            if (!p.second.isFunction())
+                throw std::runtime_error("'"+f+"' is not a function.");
+            auto&& result = p.second.getArgTypes();
+            result.erase(result.begin());
+            return result;
         }
     };
 }
