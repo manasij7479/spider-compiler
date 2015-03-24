@@ -110,7 +110,8 @@ namespace spc
             Type,
             FDef,
             FDecl,
-            VCall
+            VCall,
+            Import
         };
         Stmt(Type t):type(t){}
         Type type;
@@ -284,6 +285,17 @@ namespace spc
         auto getPrototype(){return proto;}
     private:
         FunctionPrototype* proto;
+    public:
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+    
+    class ImportStmt : public Stmt
+    {
+    public:
+        ImportStmt(StringLiteralExpr* s):Stmt(SType::Import),str(s){}
+        auto getStr(){return str;}
+    private:
+        StringLiteralExpr* str;
     public:
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };

@@ -140,6 +140,15 @@ namespace spc
         else return ParseResult(new ASTNode(), index + 1);
     }
     
+    ParseResult parseImport(int index)
+    {
+        if (!isCorrectSymbol(index, "import"))
+            return ParseResult("Line: '" 
+                + std::to_string(getToken(index)->line)
+                + "' ::Expected " + "import" +" symbol.");
+        else return ParseResult(new ASTNode(), index + 1);
+    }
+    
 
     
 }

@@ -11,6 +11,7 @@ if {scanSymbol(yytext, yylineno);}
 else {scanSymbol(yytext, yylineno);}
 while {scanSymbol(yytext, yylineno);}
 return {scanSymbol(yytext, yylineno);}
+import {scanSymbol(yytext, yylineno);}
 
 @ {scanSymbol(yytext, yylineno);}
 # {scanSymbol(yytext, yylineno);}

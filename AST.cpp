@@ -206,6 +206,12 @@ namespace spc
     }
 
     
+    void ImportStmt::dump(int tab, std::ostream& out)
+    {
+        tabs(tab, out);
+        out << "ImportStmt\n";
+        str->dump(tab+1, out);
+    }
 
 
     

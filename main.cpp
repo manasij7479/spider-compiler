@@ -21,6 +21,9 @@ int main()
         std::vector<spc::ASTNode*> data = v->getData();
         spc::Sema s;
         for (auto node : data)
+        {
+//             static_cast<spc::Stmt*>(node)->dump();
             s.process(static_cast<spc::Stmt*>(node));
+        }
     }
 }

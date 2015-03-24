@@ -226,6 +226,19 @@ namespace spc
         else return ParseResult(new VoidCallStmt(ce), result.nextIndex());
     }
     
+    /*
+     * importstmt <- import stringliteral;
+     */
+    ParseResult parseImportStmt(int index)
+    {
+        StringLiteralExpr* s;
+        auto f = Sequence({parseImport, hook(parseStringLiteralExpr, s), parseSemicolon});
+        auto result = f(index);
+        if (!result)
+            return result;
+        else return ParseResult(new ImportStmt(s), result.nextIndex());
+        
+    }
     ParseResult parseStmt(int index)
     {
         return LinearChoice
@@ -236,6 +249,7 @@ namespace spc
                 parseIfStmt,
                 parseWhileStmt,
                 parseStmtBlock,
+                parseImportStmt,
                 parseVoidCallStmt,
                 parseFunctionDeclarationStmt,
                 parseFunctionDefinitionStmt
