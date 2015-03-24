@@ -11,7 +11,7 @@ int main()
 {
     yylex();
     spc::Tokens.push_back(new spc::EOFToken);
-    auto p = spc::parseStmtBlock(0);
+    auto p = spc::ZeroOrMore(spc::parseStmt)(0);
     if (!p)
         std::cerr << p.getError() <<std::endl;
     else
@@ -19,7 +19,10 @@ int main()
 //         std::cout << "Parsed" << std::endl;
 //         if (p.get() != nullptr)
 //             p.get()->dump();
+        spc::ASTNodeVector* v = static_cast<spc::ASTNodeVector*>(p.get());
+        std::vector<spc::ASTNode*> data = v->getData();
         spc::Sema s;
-        s.process(static_cast<spc::Stmt*>(p.get()));
+        for (auto node : data)
+            s.process(static_cast<spc::Stmt*>(node));
     }
 }
