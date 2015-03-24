@@ -9,9 +9,9 @@ namespace spc
     class Sema
     {
     public:
-        Sema()
+        Sema(std::ostream* out)
         {
-            output_stack.push_back(&std::cout);
+            output_stack.push_back(out);
         }
         //only process the statements from parser
         //invoke the expre process' from them

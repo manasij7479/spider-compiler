@@ -2,12 +2,8 @@
 #include "Sema.hpp"
 namespace spc
 {
-    ASTNode::ASTNode(Sema* s)
+    ASTNode::ASTNode()
     {
-        if (!s)
-            sema = new Sema;
-        else
-            sema = s;
     }
     void ASTNode::dump(int tab, std::ostream& out)
     {

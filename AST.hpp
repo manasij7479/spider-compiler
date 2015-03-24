@@ -11,10 +11,8 @@ namespace spc
     class ASTNode
     {
     public:
-        ASTNode(Sema* s = nullptr);
+        ASTNode();
         virtual void dump(int tab=0, std::ostream& out = std::cout);
-    protected:
-        Sema* sema;
     };
     class ASTNodeVector : public ASTNode
     {
