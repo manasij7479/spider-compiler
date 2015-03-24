@@ -6,24 +6,24 @@
 using namespace spc;
 void scanInt(std::string str, int line)
 {
-    Tokens.push_back(new IntLiteralToken(std::stoi(str), line));
+    insertToken(new IntLiteralToken(std::stoi(str), line));
 }
 void scanString(std::string str, int line)
 {
-    Tokens.push_back(new StringLiteralToken(str, line));
+    insertToken(new StringLiteralToken(str, line));
 }
 void scanSpecial(std::string str, int line)
 {
-    Tokens.push_back(new SpecialLiteralToken(str, line));
+    insertToken(new SpecialLiteralToken(str, line));
 }
 void scanIdentifier(std::string str, int line)
 {
-    Tokens.push_back(new IdentifierToken(str, line));
+    insertToken(new IdentifierToken(str, line));
 }
 
 void scanSymbol(std::string str, int line)
 {
-    Tokens.push_back(new SymbolToken(str, line));
+    insertToken(new SymbolToken(str, line));
 }
 
 void reportUnexpected(std::string str, int line)

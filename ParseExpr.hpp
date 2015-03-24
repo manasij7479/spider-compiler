@@ -7,30 +7,30 @@ namespace spc
     ParseResult parseExpr(int index);
     ParseResult parseIntLiteralExpr(int index)
     {
-        if (Tokens[index]->type == TType::IntLiteral)
+        if (getToken(index)->type == TType::IntLiteral)
         {
-            return ParseResult(new IntLiteralExpr(getil(Tokens[index])), index+1);
+            return ParseResult(new IntLiteralExpr(getil(getToken(index))), index+1);
         }
-        else return ParseResult("Line: '" + std::to_string(Tokens[index]->line)+"' ::Expected Int Literal");
+        else return ParseResult("Line: '" + std::to_string(getToken(index)->line)+"' ::Expected Int Literal");
     }
     ParseResult parseStringLiteralExpr(int index)
     {
-        if (Tokens[index]->type == TType::StringLiteral)
+        if (getToken(index)->type == TType::StringLiteral)
         {
-            return ParseResult(new StringLiteralExpr(getsl(Tokens[index])), index+1);
+            return ParseResult(new StringLiteralExpr(getsl(getToken(index))), index+1);
         }
         else return ParseResult("Line: '" 
-            + std::to_string(Tokens[index]->line)
+            + std::to_string(getToken(index)->line)
             + "' ::Expected String Literal");
     }
     ParseResult parseIdentifierExpr(int index)
     {
-        if (Tokens[index]->type == TType::Identifier)
+        if (getToken(index)->type == TType::Identifier)
         {
-            return ParseResult(new IdExpr(getifr(Tokens[index])), index+1);
+            return ParseResult(new IdExpr(getifr(getToken(index))), index+1);
         }
         else return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected Identifier");
     }
     
@@ -117,11 +117,11 @@ namespace spc
     }
     ParseResult ParseEof(int index)
     {
-        if (Tokens[index]->type == TType::Eof)
+        if (getToken(index)->type == TType::Eof)
         {
             return ParseResult(nullptr, index); // Special case for EOF, index does not increase.
         }
-        else return ParseResult("Line: '" + std::to_string(Tokens[index]->line)+"' ::Expected EOF");
+        else return ParseResult("Line: '" + std::to_string(getToken(index)->line)+"' ::Expected EOF");
     }
 }
 #endif

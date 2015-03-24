@@ -3,15 +3,13 @@
 #include "ParseStmt.hpp"
 #include "Sema.hpp"
 extern "C" int yylex();
-namespace spc
-{
-    std::vector<Token*> Tokens;
-}
+
 int main()
 {
     yylex();
-    spc::Tokens.push_back(new spc::EOFToken);
+    spc::insertToken(new spc::EOFToken);
     auto p = spc::ZeroOrMore(spc::parseStmt)(0);
+    
     if (!p)
         std::cerr << p.getError() <<std::endl;
     else

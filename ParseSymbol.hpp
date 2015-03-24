@@ -8,15 +8,15 @@ namespace spc
 {
     bool isCorrectSymbol(int index, std::string s)
     {
-        return Tokens[index]->type == TType::Symbol
-            && getsy(Tokens[index])->data == s;
+        return getToken(index)->type == TType::Symbol
+            && getsy(getToken(index))->data == s;
     }
     
     ParseResult parsePrefixSymbol(int index)
     {
         if (!isCorrectSymbol(index, "'"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "'" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -24,7 +24,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "="))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "=" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -32,7 +32,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "("))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "(" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -40,7 +40,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, ")"))
                 return ParseResult("Line: '" 
-                    + std::to_string(Tokens[index]->line)
+                    + std::to_string(getToken(index)->line)
                     + "' ::Expected " + ")" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -49,7 +49,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "{"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "{" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -57,7 +57,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "}"))
                 return ParseResult("Line: '" 
-                    + std::to_string(Tokens[index]->line)
+                    + std::to_string(getToken(index)->line)
                     + "' ::Expected " + "}" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -66,7 +66,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, ";"))
                 return ParseResult("Line: '" 
-                    + std::to_string(Tokens[index]->line)
+                    + std::to_string(getToken(index)->line)
                     + "' ::Expected " + ";" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -75,7 +75,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "@"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "@" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -84,7 +84,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "auto"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "auto" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -92,7 +92,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "if"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "if" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -100,7 +100,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "else"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "else" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -108,7 +108,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "while"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "while" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -117,7 +117,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "return"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "return" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -126,7 +126,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "type"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "type" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
@@ -135,7 +135,7 @@ namespace spc
     {
         if (!isCorrectSymbol(index, "function"))
             return ParseResult("Line: '" 
-                + std::to_string(Tokens[index]->line)
+                + std::to_string(getToken(index)->line)
                 + "' ::Expected " + "function" +" symbol.");
         else return ParseResult(new ASTNode(), index + 1);
     }
