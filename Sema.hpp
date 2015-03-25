@@ -2,10 +2,17 @@
 #define SEMA_HPP
 #include "AST.hpp"
 #include "SymbolTable.hpp"
+#include "GlobalState.hpp"
 #include <map>
 #include <sstream>
+#include <stdio.h>
+#include <functional>
+#include "ParseResult.hpp"
+
 namespace spc
 {
+    std::function<ParseResult(int)> ZeroOrMore(const std::function<ParseResult(int)>& f);
+    ParseResult parseStmt(int index);
     class Sema
     {
     public:
@@ -129,7 +136,31 @@ namespace spc
         void process(ImportStmt* imp)
         {
             std::string filename = imp->getStr()->getToken()->data;
-            output("Placeholder for import '"+filename+"'");
+            yyin = nullptr;
+            yyin = std::fopen(filename.substr(1, filename.length()-2).c_str(), "r");
+            if (!yyin)
+                throw std::runtime_error("File "+filename+" not found.");
+            pushState();
+            yylex();
+            insertToken(new EOFToken);
+            auto p = ZeroOrMore(parseStmt)(0);
+    
+            if (!p)
+                std::cerr << p.getError() << std::endl;
+            else
+            {
+        //         std::cout << "Parsed" << std::endl;
+        //         if (p.get() != nullptr)
+        //             p.get()->dump();
+                spc::ASTNodeVector* v = static_cast<spc::ASTNodeVector*>(p.get());
+                std::vector<spc::ASTNode*> data = v->getData();
+                for (auto node : data)
+                {
+        //             static_cast<spc::Stmt*>(node)->dump();
+                    this->process(static_cast<spc::Stmt*>(node));
+                }
+            }
+            spc::popState();
         }
         std::string convert_into_function(Expr* e) // returns function name
         {

@@ -4,11 +4,9 @@
 #include "ParseStmt.hpp"
 #include "Sema.hpp"
 #include <cstdio>
-extern "C" int yylex();
-extern "C" FILE*   yyout;
-extern "C" FILE*   yyin;
 int main(int argc, char** argv)
 {
+    spc::exepath = argv[0];
     if (argc < 2)
     {
         std::cerr << "Expected Filename or - (for stdin).";
@@ -23,6 +21,7 @@ int main(int argc, char** argv)
             return 1;
         }
     }
+    spc::pushState();
     yylex();
     
     std::ostream* out = &std::cout;
@@ -52,5 +51,6 @@ int main(int argc, char** argv)
             s.process(static_cast<spc::Stmt*>(node));
         }
     }
+    spc::popState();
     return 0;
 }
