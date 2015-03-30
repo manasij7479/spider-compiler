@@ -36,9 +36,11 @@ int main(int argc, char** argv)
     auto p = spc::ZeroOrMore(spc::parseStmt)(0);
     
     if (!p)
-        std::cerr << p.getError() << std::endl;
+        std::cerr << "ERROR: " << p.getError() << std::endl;
     else
     {
+        if (p.getError() != "")
+            std::cerr << "HEURISTICS: " << p.getError() << std::endl;
 //         std::cout << "Parsed" << std::endl;
 //         if (p.get() != nullptr)
 //             p.get()->dump();

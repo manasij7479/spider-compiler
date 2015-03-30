@@ -10,14 +10,20 @@ namespace spc
     ParserFunction LinearChoice(const std::vector<ParserFunction>& functions, std::string error = "Syntax Error")
     {
         return [=](int index) -> ParseResult
-        {   ParseResult result(error);
+        {   
+            std::vector<ParseResult> results;
             for(auto f : functions)
             {
-                result = f(index);
+                auto result = f(index);
                 if (result)
                     return result;
+                else results.push_back(result);
             }
-            return ParseResult(result.getError() + "\n from: " + error);
+            
+            for (auto res : results)
+                if (res.maybeCorrect())
+                    return res;
+            return ParseResult(results[0].getError() + "\n from: " + error);
         };
     }
     
@@ -26,11 +32,16 @@ namespace spc
         return [=](int index) -> ParseResult
         {
             std::vector<ASTNode*> data;
+            std::string err;
             while(true)
             {
                 auto result = f(index);
                 if (result == false)
+                {
+                    if (result.maybeCorrect())
+                        err = result.getError();
                     break;
+                }
                 else
                 {
                     index = result.nextIndex();
@@ -38,7 +49,10 @@ namespace spc
                 }
 //                 std::cerr << "STAR\n";
             }
-            return ParseResult(new ASTNodeVector(data), index);
+            ParseResult result(new ASTNodeVector(data), index);
+            if (err != "")
+                result.setError(err);
+            return result;
         };
     }
     
@@ -46,19 +60,22 @@ namespace spc
     {
         return [=](int index) -> ParseResult
         {
-            
+            bool partial = false;
             std::vector<ASTNode*> data;
             for(auto f : functions)
             {
                 auto result = f(index);
                 if (!result)
                 {
+                    if (partial)
+                        result.maybeCorrect() = true;
                     return result;
                 }
                 else
                 {
                     index = result.nextIndex();
                     data.push_back(result.get());
+                    partial = true;
                 }
 //                 std::cerr << "SEQ\n";
             }
