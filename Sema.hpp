@@ -100,7 +100,7 @@ namespace spc
             std::string rettype;
             if (fp->getReturnArg() != nullptr)
                 rettype = fp->getReturnArg()->getTypeName()->getToken()->data;
-            else rettype = "void";
+            else rettype = "any";
             std::vector<std::string> mapdata({rettype});
             out << fname << " ";
             if (fp->getReturnArg() != nullptr)
@@ -120,7 +120,7 @@ namespace spc
         }
         void process(VoidCallStmt* vstmt)
         {
-            auto p = process(vstmt->getCallExpr());
+            auto p = process(vstmt->getCallExpr(),/*assign=*/ false);
             //ignore the result for now
             //needs checking, maybe warnings too if type is not void
         }
@@ -193,23 +193,23 @@ namespace spc
                 case EType::Call: return process(static_cast<CallExpr*>(e));
             }
         }
-        std::pair<std::string, Type> process(CallExpr* ce)
+        std::pair<std::string, Type> process(CallExpr* ce, bool assign = true)
         {
             std::ostringstream os;
             std::string fname = ce->getCallee()->getToken()->data;
             std::string s = table.getNewName(getReturnType(fname));
             auto&& args = getArgTypeList(fname);
-            if (getReturnType(fname) != "void")
+            if (getReturnType(fname) != "void" && assign == true)
                 os << "let " << s << ' ';
             
             os << fname << ' ';
-//             for(auto arg : ce->getArgs()->getData())
-            if (args.size() != ce->getArgs()->getData().size())
+
+            if ( args.size() != 0 && args.size() != ce->getArgs()->getData().size())
                 throw std::runtime_error("Argument size mismatch, expected '"+std::to_string(args.size())+"' got '"+std::to_string(ce->getArgs()->getData().size()));
             for(int i = 0 ; i < ce->getArgs()->getData().size(); ++i)
             {
                 auto p = process(ce->getArgs()->getData()[i]);
-                if (Type(args[i]).isCompatible(p.second.getType()) == false)
+                if (args.size() != 0 && Type(args[i]).isCompatible(p.second.getType()) == false)
                     throw std::runtime_error("Type Mismatch, expected '"+args[i]+"' got '"+p.second.getType());
                 os << p.first << ' ';
             }
