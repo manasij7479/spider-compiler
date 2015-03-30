@@ -161,7 +161,7 @@ namespace spc
     ParseResult parseFunctionArg(int index)
     {
         IdExpr *name, *type;
-        auto f = Sequence({parseOpenParen, hook(parseIdentifierExpr, name), hook(parseIdentifierExpr, type), parseCloseParen});
+        auto f = Sequence({parseOpenParen, hook(parseIdentifierExpr, type), hook(parseIdentifierExpr, name), parseCloseParen});
         auto result = f(index);
         if (!result)
             return result;
