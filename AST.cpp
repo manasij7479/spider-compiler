@@ -236,6 +236,13 @@ namespace spc
 //         sema->process(this);
     }
     
+    void FloatLiteralExpr::dump(int tab, std::ostream& out)
+    {
+        tabs(tab, out);
+        out << "Float Literal: " << f->data << "\n";
+    }
+
+    
     void tabs(int t, std::ostream& out)
     {
         while(t--)

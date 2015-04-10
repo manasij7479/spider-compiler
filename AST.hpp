@@ -31,6 +31,7 @@ namespace spc
         {
             Id,
             Int,
+            Float,
             String,
             List,
             Call
@@ -58,6 +59,16 @@ namespace spc
         IntLiteralToken* i;
     public:
         auto getToken(){return i;}
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+    class FloatLiteralExpr: public Expr
+    {
+    public:
+        FloatLiteralExpr(FloatLiteralToken* ft):Expr(EType::Float),f(ft){}
+    private:
+        FloatLiteralToken* f;
+    public:
+        auto getToken(){return f;}
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     class StringLiteralExpr: public Expr
