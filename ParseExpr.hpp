@@ -89,11 +89,29 @@ namespace spc
     }
     
     /*
-     * infixcallexpr <- ' expr . identifier expr* '?
+     * infixcallexpr <- ' expr identifier exprlist '?
      */
     ParseResult parseInfixCallExpr(int index)
     {
-        return ParseResult("NOT_IMPLEMENTED");
+        Expr* obj;
+        IdExpr* id;
+        ExprList* list;
+        auto f = Sequence
+        (
+            {
+                parsePrefixSymbol,
+                hook(parseExpr, obj),
+                hook(parseIdentifierExpr, id),
+                hook(parseExprList, list),
+                Optional(parsePrefixSymbol)
+            }
+        );
+        auto result = f(index);
+        if(!result)
+            return result;
+        auto data = list->getData();
+        data.insert(data.begin(), obj);
+        return ParseResult(new CallExpr(id, new ExprList(data)), result.nextIndex());
     }
     
     /*
@@ -106,6 +124,7 @@ namespace spc
             {
                 parseIntLiteralExpr,
                 parseStringLiteralExpr,
+                parseInfixCallExpr,
                 parsePrefixCallExpr, // Would benefit from memoization
                 parseIdentifierExpr,
                 
