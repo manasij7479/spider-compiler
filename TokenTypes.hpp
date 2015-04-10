@@ -11,6 +11,7 @@ namespace spc
             IntLiteral,
             StringLiteral,
             SpecialLiteral,
+            FloatLIteral,
             Identifier,
             Symbol,
             Eof
@@ -27,6 +28,12 @@ namespace spc
     public:
         IntLiteralToken(int n, int l):Token(TType::IntLiteral, l), data(n){}
         int data;
+    };
+    class FloatLiteralToken : public Token
+    {
+    public:
+        FloatLiteralToken(float f, int l):Token(TType::FloatLIteral, l), data(f){}
+        float data;
     };
     class StringLiteralToken : public Token
     {

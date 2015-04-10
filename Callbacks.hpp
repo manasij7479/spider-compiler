@@ -8,6 +8,10 @@ void scanInt(std::string str, int line)
 {
     insertToken(new IntLiteralToken(std::stoi(str), line));
 }
+void scanFloat(std::string str, int line)
+{
+    insertToken(new FloatLiteralToken(std::stof(str), line));
+}
 void scanString(std::string str, int line)
 {
     insertToken(new StringLiteralToken(str, line));
