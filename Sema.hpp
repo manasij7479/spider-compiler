@@ -97,22 +97,26 @@ namespace spc
             std::ostringstream out;
             out << "function ";
             std::string fname = fp->getName()->getToken()->data;
-            std::string rettype;
+            std::string rettype, retname;
             if (fp->getReturnArg() != nullptr)
                 rettype = fp->getReturnArg()->getTypeName()->getToken()->data;
             else rettype = "any";
-            std::vector<std::string> mapdata({rettype});
+            std::vector<std::pair<std::string, std::string>> mapdata;
             out << fname << " ";
             if (fp->getReturnArg() != nullptr)
-                out << fp->getReturnArg()->getName()->getToken()->data << " ";
-            else out << "_placeholder ";
+                retname = fp->getReturnArg()->getName()->getToken()->data;
+            else
+                    retname = "_placeholder"; 
+            out << retname << " ";
             out << rettype << " ";
+            
+            mapdata.push_back({rettype, retname});
             for (FunctionArg* arg : fp->getArgs())
             {
                 std::string argtype = arg->getTypeName()->getToken()->data;
                 out << arg->getName()->getToken()->data << " ";
                 out << argtype << " ";
-                mapdata.push_back(argtype);
+                mapdata.push_back({argtype, arg->getName()->getToken()->data});
             }
             if (codegen)
                 output(out.str());
@@ -169,7 +173,9 @@ namespace spc
             output_stack.push_back(&temp);
             auto p = process(e);
             output_stack.pop_back();
-            std::string fname = table.getNewName(Type(std::vector<std::string>{p.second.getType()}));
+            std::vector<std::pair<std::string, std::string>> type;
+            type.push_back({p.second.getType(), p.first});
+            std::string fname = table.getNewName(Type(type));
             std::string result = table.getNewName(Type(p.second.getType()));
             
             output("function " + fname + " " + result + " " + p.second.getType());
@@ -199,6 +205,9 @@ namespace spc
             std::string fname = ce->getCallee()->getToken()->data;
             std::string s = table.getNewName(getReturnType(fname));
             auto&& args = getArgTypeList(fname);
+            table.push();
+            for (auto p: args)
+                table.insert(p.second, Type(p.first));
             if (getReturnType(fname) != "void" && assign == true)
                 os << "let " << s << ' ';
             
@@ -208,12 +217,15 @@ namespace spc
                 throw std::runtime_error("Argument size mismatch, expected '"+std::to_string(args.size())+"' got '"+std::to_string(ce->getArgs()->getData().size()));
             for(int i = 0 ; i < ce->getArgs()->getData().size(); ++i)
             {
+//                 ce->getArgs()->getData()[i]->dump();
                 auto p = process(ce->getArgs()->getData()[i]);
-                if (args.size() != 0 && Type(args[i]).isCompatible(p.second.getType()) == false)
-                    throw std::runtime_error("Type Mismatch, expected '"+args[i]+"' got '"+p.second.getType());
+//                 std::cerr << "DEBUG" << args[i] << ','<< p.first << ',' << p.second.getType() << std::endl;
+                if (args.size() != 0 && Type(args[i].first).isCompatible(p.second.getType()) == false)
+                    throw std::runtime_error("Type Mismatch, expected '"+args[i].first+"' got '"+p.second.getType());
                 os << p.first << ' ';
             }
             output(os.str());
+            table.pop();
             return {s, getReturnType(ce->getCallee()->getToken()->data)};
         }
         void output(std::string s, bool endl = true)
@@ -236,9 +248,9 @@ namespace spc
                 throw std::runtime_error("Function: '"+f+"' does not exist.");
             if (!p.second.isFunction())
                 throw std::runtime_error("'"+f+"' is not a function.");
-            return p.second.getArgTypes()[0];
+            return p.second.getArgTypes()[0].first;
         }
-        std::vector<std::string> getArgTypeList(std::string f)
+        std::vector<std::pair<std::string, std::string>> getArgTypeList(std::string f)
         {
             auto p = table.lookup(f);
             if (!p.first)

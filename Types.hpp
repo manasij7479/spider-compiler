@@ -8,10 +8,10 @@ namespace spc
     public:
         Type(){/*not valid*/}
         Type(std::string t):isfunc(false), name(t){}
-        Type(std::vector<std::string> args): isfunc(true), argtypes(args){}
+        Type(std::vector<std::pair<std::string, std::string>> args): isfunc(true), argtypes(args){}
         bool isFunction(){return isfunc;}
         std::string getType(){return name;}
-        std::vector<std::string> getArgTypes(){return argtypes;}
+        std::vector<std::pair<std::string, std::string>> getArgTypes(){return argtypes;}
         bool isCompatible(std::string s)
         {
             if (isfunc)
@@ -27,14 +27,14 @@ namespace spc
             if (vs.size() != argtypes.size())
                 return false;
             for (uint i = 0 ; i < argtypes.size(); ++i)
-                if (argtypes[i] != vs[i] && argtypes[i] != "any")
+                if (argtypes[i].first != vs[i] && argtypes[i].first != "any")
                     return false;
             return true;
         }
     private:
         bool isfunc;
         std::string name;
-        std::vector<std::string> argtypes;
+        std::vector<std::pair<std::string, std::string>> argtypes;
     };
 }
 #endif
