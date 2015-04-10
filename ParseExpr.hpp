@@ -35,17 +35,16 @@ namespace spc
     }
     
     /*
-     * exprlist <- ( expr* )
+     * exprlist <- expr*
      */
     ParseResult parseExprList(int index)
     {
-        auto f = Sequence({parseOpenParen, ZeroOrMore(parseExpr), parseCloseParen});
+        auto f = ZeroOrMore(parseExpr);
         auto result = f(index);
         if (!result)
             return result;
-        ASTNodeVector* v = static_cast<ASTNodeVector*>(result.get());
         std::vector<Expr*> data;
-        for (auto x : static_cast<ASTNodeVector*>(v->getData()[1])->getData())
+        for (auto x : static_cast<ASTNodeVector*>(result.get())->getData())
             data.push_back(static_cast<Expr*>(x));
         return ParseResult(new ExprList(data), result.nextIndex());
     }
@@ -68,7 +67,7 @@ namespace spc
 //     }
     
     /*
-     *  prefixcallexpr <- 'identifier exprlist
+     *  prefixcallexpr <- 'identifier (exprlist)
      */
     ParseResult parsePrefixCallExpr(int index)
     {
@@ -79,7 +78,7 @@ namespace spc
             {
 //                 parsePrefixSymbol, 
                 hook(parseIdentifierExpr, id),
-                hook(parseExprList, list)
+                Sequence({parseOpenParen, hook(parseExprList, list), parseCloseParen})
             }
         );
         auto result = f(index);
@@ -90,7 +89,7 @@ namespace spc
     }
     
     /*
-     * infixcallexpr <- . expr identifier expr*
+     * infixcallexpr <- ' expr . identifier expr* '?
      */
     ParseResult parseInfixCallExpr(int index)
     {
