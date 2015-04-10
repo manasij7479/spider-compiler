@@ -195,6 +195,7 @@ namespace spc
                     return {s, table.lookup(s).second};
                 }
                 case EType::Int : return {"i"+std::to_string(static_cast<IntLiteralExpr*>(e)->getToken()->data), Type("int")};
+                case EType::Float : return {"f"+std::to_string(static_cast<FloatLiteralExpr*>(e)->getToken()->data), Type("float")};
                 case EType::String : return {static_cast<StringLiteralExpr*>(e)->getToken()->data,Type("string")};
                 case EType::Call: return process(static_cast<CallExpr*>(e));
             }

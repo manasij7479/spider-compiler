@@ -13,6 +13,14 @@ namespace spc
         }
         else return ParseResult("Line: '" + std::to_string(getToken(index)->line)+"' ::Expected Int Literal");
     }
+    ParseResult parseFloatLiteralExpr(int index)
+    {
+        if (getToken(index)->type == TType::FloatLiteral)
+        {
+            return ParseResult(new FloatLiteralExpr(getfl(getToken(index))), index+1);
+        }
+        else return ParseResult("Line: '" + std::to_string(getToken(index)->line)+"' ::Expected Float Literal");
+    }
     ParseResult parseStringLiteralExpr(int index)
     {
         if (getToken(index)->type == TType::StringLiteral)
@@ -123,6 +131,7 @@ namespace spc
         (
             {
                 parseIntLiteralExpr,
+                parseFloatLiteralExpr,
                 parseStringLiteralExpr,
                 parseInfixCallExpr,
                 parsePrefixCallExpr, // Would benefit from memoization
