@@ -8,7 +8,7 @@ namespace spc
     public:
         Type(){/*not valid*/}
         Type(std::string t):isfunc(false), name(t){}
-        Type(std::vector<std::pair<std::string, std::string>> args): isfunc(true), argtypes(args){}
+        Type(std::vector<std::pair<std::string, std::string>> args): isfunc(true), argtypes(args), name("func"){}
         bool isFunction(){return isfunc;}
         std::string getType(){return name;}
         std::vector<std::pair<std::string, std::string>> getArgTypes(){return argtypes;}

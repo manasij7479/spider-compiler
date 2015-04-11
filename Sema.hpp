@@ -118,9 +118,17 @@ namespace spc
                 out << argtype << " ";
                 mapdata.push_back({argtype, arg->getName()->getToken()->data});
             }
-            if (codegen)
-                output(out.str());
             table.insert(fname, Type(mapdata));
+            if (codegen)
+            {
+                output(out.str());
+                for (auto p: getArgTypeList(fname))
+                {
+//                     std::cerr << "INSERT:" << p.second << ','<<p.first<<std::endl;
+                    table.insert(p.second, Type(p.first));
+                }
+            }
+            
         }
         void process(VoidCallStmt* vstmt)
         {
@@ -135,6 +143,7 @@ namespace spc
         void process(FunctionDefinition* fd)
         {
             process(fd->getPrototype(), true /*codegen*/);
+            
             process(fd->getBlock());
         }
         void process(ImportStmt* imp)
@@ -206,9 +215,7 @@ namespace spc
             std::string fname = ce->getCallee()->getToken()->data;
             std::string s = table.getNewName(getReturnType(fname));
             auto&& args = getArgTypeList(fname);
-            table.push();
-            for (auto p: args)
-                table.insert(p.second, Type(p.first));
+
             if (getReturnType(fname) != "void" && assign == true)
                 os << "let " << s << ' ';
             
@@ -220,13 +227,16 @@ namespace spc
             {
 //                 ce->getArgs()->getData()[i]->dump();
                 auto p = process(ce->getArgs()->getData()[i]);
-//                 std::cerr << "DEBUG" << args[i] << ','<< p.first << ',' << p.second.getType() << std::endl;
-                if (args.size() != 0 && Type(args[i].first).isCompatible(p.second.getType()) == false)
+                
+                std::string argtype = p.second.getType();
+                if (args.size() != 0 && Type(args[i].first).isCompatible(argtype) == false)
+                {
+//                     std::cerr << "DEBUG" << args[i].first << ','<< p.first << ',' << p.second.getType() << ','<< std::endl;
                     throw std::runtime_error("Type Mismatch, expected '"+args[i].first+"' got '"+p.second.getType());
+                }
                 os << p.first << ' ';
             }
             output(os.str());
-            table.pop();
             return {s, getReturnType(ce->getCallee()->getToken()->data)};
         }
         void output(std::string s, bool endl = true)
