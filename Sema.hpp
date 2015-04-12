@@ -207,6 +207,7 @@ namespace spc
                 case EType::Float : return {"f"+std::to_string(static_cast<FloatLiteralExpr*>(e)->getToken()->data), Type("float")};
                 case EType::String : return {static_cast<StringLiteralExpr*>(e)->getToken()->data,Type("string")};
                 case EType::Call: return process(static_cast<CallExpr*>(e));
+                case EType::Special: static_cast<SpecialExpr*>(e)->dump();
             }
         }
         std::pair<std::string, Type> process(CallExpr* ce, bool assign = true)

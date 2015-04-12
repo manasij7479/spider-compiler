@@ -34,13 +34,14 @@ namespace spc
             Float,
             String,
             List,
-            Call
+            Call,
+            Special
         };
         Expr(Type t):type(t){}
         Type type;
     };
     typedef Expr::Type EType;
-    
+
     class IdExpr : public Expr
     {
     public:
@@ -102,6 +103,29 @@ namespace spc
         ExprList* args;
     public:
         auto getCallee(){return fname;}
+        auto getArgs(){return args;}
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+
+    class SpecialTokenNode : public ASTNode
+    {
+    public:
+    SpecialTokenNode(SpecialLiteralToken* sp_):sp(sp_){}
+    private:
+        SpecialLiteralToken* sp;
+    public:
+        auto getToken(){return sp;}
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+    class SpecialExpr : public Expr
+    {
+    public:
+        SpecialExpr(SpecialTokenNode* sp_, ExprList* el):Expr(EType::Special), sp(sp_), args(el){}
+    private:
+        SpecialTokenNode* sp;
+        ExprList* args;
+    public:
+        auto getSpecialToken(){return sp;}
         auto getArgs(){return args;}
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };

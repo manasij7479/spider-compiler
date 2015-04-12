@@ -248,4 +248,17 @@ namespace spc
         while(t--)
             out << '\t';
     }
+    void SpecialExpr::dump(int tab, std::ostream& out)
+    {
+        tabs(tab, out);
+        out << "Special Expression\n";
+        sp->dump(tab+1, out);
+        args->dump(tab+1, out);
+    }
+    void SpecialTokenNode::dump(int tab, std::ostream& out)
+    {
+        tabs(tab+1, out);
+        out << "SpecialToken:" << sp->data << "\n";
+    }
+
 }

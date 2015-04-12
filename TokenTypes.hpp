@@ -90,6 +90,10 @@ namespace spc
     {
         return static_cast<IdentifierToken*>(t);
     }
+    inline SpecialLiteralToken* getspc(Token* t)
+    {
+        return static_cast<SpecialLiteralToken*>(t);
+    }
     
     
 }

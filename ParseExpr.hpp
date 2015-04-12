@@ -41,6 +41,16 @@ namespace spc
                 + std::to_string(getToken(index)->line)
                 + "' ::Expected Identifier");
     }
+    ParseResult parseSpecialTokenNode(int index)
+    {
+        if (getToken(index)->type == TType::SpecialLiteral)
+        {
+            return ParseResult(new SpecialTokenNode(getspc(getToken(index))), index+1);
+        }
+        else return ParseResult("Line: '" 
+                + std::to_string(getToken(index)->line)
+                + "' ::Expected Special Token");
+    }
     
     /*
      * exprlist <- expr*
@@ -74,8 +84,30 @@ namespace spc
 //         return ParseResult(node, result.nextIndex());
 //     }
     
+    
     /*
-     *  prefixcallexpr <- 'identifier (exprlist)
+     * specialexpr <- special (exprlist)
+     */
+    ParseResult parseSpecialExpr(int index)
+    {
+        SpecialTokenNode* sp;
+        ExprList* list;
+        auto f = Sequence
+        (
+            {
+                hook(parseSpecialTokenNode, sp),
+                Sequence({parseOpenParen, hook(parseExprList, list), parseCloseParen})
+            }
+        );
+        auto result = f(index);
+        if(!result)
+            return result;
+
+        return ParseResult(new SpecialExpr(sp, list), result.nextIndex());
+    }
+    
+    /*
+     *  prefixcallexpr <- identifier (exprlist)
      */
     ParseResult parsePrefixCallExpr(int index)
     {
@@ -133,6 +165,7 @@ namespace spc
                 parseIntLiteralExpr,
                 parseFloatLiteralExpr,
                 parseStringLiteralExpr,
+                parseSpecialExpr,
                 parseInfixCallExpr,
                 parsePrefixCallExpr, // Would benefit from memoization
                 parseIdentifierExpr,
