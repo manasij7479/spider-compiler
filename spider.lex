@@ -2,6 +2,7 @@
 %{
 #include "Callbacks.hpp"
 #define YY_DECL extern "C" int yylex()
+extern "C" int yywrap(void){return 1;}
 %}
 %%
 function {scanSymbol(yytext, yylineno);}

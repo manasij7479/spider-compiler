@@ -52,12 +52,12 @@ namespace spc
                 while(!ops.empty())
                 {
                     char sop = ops.back();
-                    if ( it->second.second == false && op_table[sop].first > it->second.first)
+                    if ( it->second.second == true && op_table[sop].first > it->second.first)
                     {
                         result+=sop;
                         ops.pop_back();
                     }
-                    if ( it->second.second == true  && op_table[sop].first >= it->second.first)
+                    if ( it->second.second == false  && op_table[sop].first >= it->second.first)
                     {
                         result+=sop;
                         ops.pop_back();
