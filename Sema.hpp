@@ -240,6 +240,71 @@ namespace spc
             output(os.str());
             return {s, getReturnType(ce->getCallee()->getToken()->data)};
         }
+        std::string convert_to_rpn(std::string input)
+        {
+            static std::map<char, std::pair<int, bool>> op_table = 
+            {
+                {'+', {0, false}},
+                {'-', {0, false}},
+                {'*', {1, false}},
+                {'/', {1, false}},
+                {'%', {1, false}},
+                {'^', {2, true }},
+            };
+            std::string result;
+            std::vector<char> ops;
+            auto it = op_table.begin();
+            for (int i = 0; i < input.size(); ++i)
+            {
+                if (std::isdigit(input[i]))
+                    result += input[i];
+                else if ((it = op_table.find(input[i])) != op_table.end())
+                {
+                    while(!ops.empty())
+                    {
+                        char sop = ops.back();
+                        if ( it->second.second == false && op_table[sop].first > it->second.first)
+                        {
+                            result+=sop;
+                            ops.pop_back();
+                        }
+                        if ( it->second.second == true  && op_table[sop].first >= it->second.first)
+                        {
+                            result+=sop;
+                            ops.pop_back();
+                        }
+                        else break;
+                    }
+                    ops.push_back(it->first);
+                }
+                else if (input[i] == '(')
+                    ops.push_back('(');
+                else if (input[i] == ')')
+                {
+                    while(true)
+                    {
+                        if (ops.empty())
+                            throw std::runtime_error("Mal formed infix expression in input.");
+                        char c = ops.back();
+                        ops.pop_back();
+                        if (c == '(')
+                            break;
+                        else result += c;
+                    }
+                }
+                else throw std::runtime_error(std::string("Bad Operator in special expression: ").append(1, input[i]));
+            }
+            while(!ops.empty())
+            {
+                char c = ops.back();
+                if (c == '(')
+                    throw std::runtime_error("Mal formed infix expression in input.");
+                result += ops.back();
+                ops.pop_back();
+            }
+            return result;
+            
+        }
         std::pair<std::string, Type> process(SpecialExpr* ce)
         {
             std::string control = ce->getSpecialToken()->getData();
@@ -248,7 +313,8 @@ namespace spc
             std::vector<std::pair<std::string, Type>> pargs;
             for (auto expr : ce->getArgs()->getData())
                 pargs.push_back(process(expr));
-            
+            control=convert_to_rpn(control);
+            //generate code for rpn
             std::vector<std::pair<std::string, Type>> opn;
             for(int i = 0; i < control.length(); ++i)
             {
@@ -260,13 +326,27 @@ namespace spc
                     auto y = opn.back(); opn.pop_back();
                     auto x = opn.back(); opn.pop_back();
                     std::string name = table.getNewName(x.second);
-                    
                     switch(control[i])
                     {
                         case '+':
                             output("let " + name + " add "+x.first+" "+y.first);
                             break;
-                        default: throw(std::runtime_error("Bad operator in special expression: " + control[i]));
+                        case '-':
+                            output("let " + name + " sub "+x.first+" "+y.first);
+                            break;
+                        case '*':
+                            output("let " + name + " mul "+x.first+" "+y.first);
+                            break;
+                        case '/':
+                            output("let " + name + " div "+x.first+" "+y.first);
+                            break;
+                        case '%':
+                            output("let " + name + " mod "+x.first+" "+y.first);
+                            break;
+                        case '^':
+                            output("let " + name + " pow "+x.first+" "+y.first);
+                            break;
+                        default: throw std::runtime_error(std::string("Bad operator in special expression: ").append(1, control[i]));
                     }
                     opn.push_back({name, x.second});
                 }
