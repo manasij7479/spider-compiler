@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <functional>
 #include "ParseResult.hpp"
-
+#include <cctype>
 namespace spc
 {
     std::function<ParseResult(int)> ZeroOrMore(const std::function<ParseResult(int)>& f);
@@ -207,7 +207,7 @@ namespace spc
                 case EType::Float : return {"f"+std::to_string(static_cast<FloatLiteralExpr*>(e)->getToken()->data), Type("float")};
                 case EType::String : return {static_cast<StringLiteralExpr*>(e)->getToken()->data,Type("string")};
                 case EType::Call: return process(static_cast<CallExpr*>(e));
-                case EType::Special: static_cast<SpecialExpr*>(e)->dump();
+                case EType::Special: return process(static_cast<SpecialExpr*>(e));
             }
         }
         std::pair<std::string, Type> process(CallExpr* ce, bool assign = true)
@@ -239,6 +239,40 @@ namespace spc
             }
             output(os.str());
             return {s, getReturnType(ce->getCallee()->getToken()->data)};
+        }
+        std::pair<std::string, Type> process(SpecialExpr* ce)
+        {
+            std::string control = ce->getSpecialToken()->getData();
+            control = control.substr(1, control.length()-2);
+//             std::istringstream in(control.substr(1, control.length()-2));
+            std::vector<std::pair<std::string, Type>> pargs;
+            for (auto expr : ce->getArgs()->getData())
+                pargs.push_back(process(expr));
+            
+            std::vector<std::pair<std::string, Type>> opn;
+            for(int i = 0; i < control.length(); ++i)
+            {
+                if (std::isdigit(control[i]))
+                    opn.push_back(pargs[control[i]-'0']);
+                else 
+                {
+                    //todo size and type check
+                    auto y = opn.back(); opn.pop_back();
+                    auto x = opn.back(); opn.pop_back();
+                    std::string name = table.getNewName(x.second);
+                    
+                    switch(control[i])
+                    {
+                        case '+':
+                            output("let " + name + " add "+x.first+" "+y.first);
+                            break;
+                        default: throw(std::runtime_error("Bad operator in special expression: " + control[i]));
+                    }
+                    opn.push_back({name, x.second});
+                }
+            }
+            
+            return opn[0];
         }
         void output(std::string s, bool endl = true)
         {

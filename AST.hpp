@@ -114,7 +114,7 @@ namespace spc
     private:
         SpecialLiteralToken* sp;
     public:
-        auto getToken(){return sp;}
+        auto getData(){return sp->data;}
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     class SpecialExpr : public Expr
