@@ -33,6 +33,7 @@ namespace spc
             Int,
             Float,
             String,
+            Bool,
             List,
             Call,
             Special
@@ -80,6 +81,17 @@ namespace spc
         StringLiteralToken* s;
     public:
         auto getToken(){return s;}
+        virtual void dump(int tab=0, std::ostream& out = std::cout);
+    };
+    
+    class BoolLiteralExpr: public Expr
+    {
+    public:
+        BoolLiteralExpr(SymbolToken* st):Expr(EType::Bool),sym(st){}
+    private:
+        SymbolToken* sym;
+    public:
+        auto getToken(){return sym;}
         virtual void dump(int tab=0, std::ostream& out = std::cout);
     };
     

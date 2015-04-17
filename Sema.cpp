@@ -185,6 +185,7 @@ namespace spc
             case EType::Int : return {"i"+std::to_string(static_cast<IntLiteralExpr*>(e)->getToken()->data), Type("int")};
             case EType::Float : return {"f"+std::to_string(static_cast<FloatLiteralExpr*>(e)->getToken()->data), Type("float")};
             case EType::String : return {static_cast<StringLiteralExpr*>(e)->getToken()->data,Type("string")};
+            case EType::Bool : return {static_cast<BoolLiteralExpr*>(e)->getToken()->data,Type("bool")};
             case EType::Call: return process(static_cast<CallExpr*>(e));
             case EType::Special: return process(static_cast<SpecialExpr*>(e));
         }

@@ -13,7 +13,8 @@ else {scanSymbol(yytext, yylineno);}
 while {scanSymbol(yytext, yylineno);}
 return {scanSymbol(yytext, yylineno);}
 import {scanSymbol(yytext, yylineno);}
-
+true {scanSymbol(yytext, yylineno);}
+false {scanSymbol(yytext, yylineno);}
 @ {scanSymbol(yytext, yylineno);}
 # {scanSymbol(yytext, yylineno);}
 = {scanSymbol(yytext, yylineno);}

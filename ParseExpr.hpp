@@ -31,6 +31,19 @@ namespace spc
             + std::to_string(getToken(index)->line)
             + "' ::Expected String Literal");
     }
+    
+    ParseResult parseBoolLiteralExpr(int index)
+    {
+        auto tok = getToken(index);
+        if (tok->type == TType::Symbol && (getsy(tok)->data == "true" || getsy(tok)->data == "false"))
+        {
+            return ParseResult(new BoolLiteralExpr(getsy(getToken(index))), index+1);
+        }
+        else return ParseResult("Line: '" 
+            + std::to_string(getToken(index)->line)
+            + "' ::Expected Bool Literal (true/false)");
+    }
+    
     ParseResult parseIdentifierExpr(int index)
     {
         if (getToken(index)->type == TType::Identifier)
@@ -165,6 +178,7 @@ namespace spc
                 parseIntLiteralExpr,
                 parseFloatLiteralExpr,
                 parseStringLiteralExpr,
+                parseBoolLiteralExpr,
                 parseSpecialExpr,
                 parseInfixCallExpr,
                 parsePrefixCallExpr, // Would benefit from memoization

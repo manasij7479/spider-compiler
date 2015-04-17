@@ -260,5 +260,12 @@ namespace spc
         tabs(tab+1, out);
         out << "SpecialToken:" << sp->data << "\n";
     }
+    void BoolLiteralExpr::dump(int tab, std::ostream& out)
+    {
+        tabs(tab, out);
+        out << "Bool Literal\n";
+        tabs(tab+1, out);
+        out << sym->data << "\n";
+    }
 
 }
