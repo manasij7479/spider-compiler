@@ -311,7 +311,6 @@ namespace spc
     }
     void Sema::process(DeclStmt* ds)
     {
-        //TODO insert id into symbol table
         IdExpr* id = ds->getAssignStmt()->getLvalue();
         auto p = process(ds->getAssignStmt()->getRvalue());
 //             m_TypeMap[id->getToken()->data] = p.second;
@@ -320,10 +319,11 @@ namespace spc
     }
     void Sema::process(AssignStmt* as)
     {
-        //type check
         IdExpr* id = as->getLvalue();
         auto p = process(as->getRvalue());
-        //check if getType of id is same as p.second
+        //TODO: Write better error message
+        if (table.lookup(id->getToken()->data).second != p.second)
+            throw std::runtime_error("Type mismatch in assign statement");
         output("assign "+ id->getToken()->data + " " + p.first); 
     }
     void Sema::process(StmtBlock* b)

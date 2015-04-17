@@ -31,6 +31,14 @@ namespace spc
                     return false;
             return true;
         }
+        bool operator==(Type t)
+        {
+            return isfunc == t.isfunc && name == t.name;
+        }
+        bool operator!=(Type t)
+        {
+            return !(*this == t);
+        }
     private:
         bool isfunc;
         std::string name;
