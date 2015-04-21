@@ -16,7 +16,7 @@ namespace spc
         {
             if (isfunc)
                 return false;
-            if (name == "any")
+            if (name == "any" || s == "any")
                 return true;
             else return s == name;
         }
