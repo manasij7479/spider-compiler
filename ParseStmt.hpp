@@ -219,7 +219,7 @@ namespace spc
     ParseResult parseVoidCallStmt(int index)
     {
         CallExpr* ce;
-        auto f  = Sequence({hook(parsePrefixCallExpr, ce), parseSemicolon});
+        auto f  = Sequence({LinearChoice({hook(parsePrefixCallExpr, ce), hook(parseInfixCallExpr, ce)}), parseSemicolon});
         auto result = f(index);
         if (!result)
             return result;
