@@ -6,8 +6,14 @@ namespace spc
         auto p = table.lookup(f);
         if (!p.first)
             throw std::runtime_error("Function: '"+f+"' does not exist.");
+        
+        if (p.second.getArgTypes().empty() && p.second.getType() == "func")
+        {
+            return "any";
+        }
         if (!p.second.isFunction())
             throw std::runtime_error("'"+f+"' is not a function.");
+        
         return p.second.getArgTypes()[0].first;
     }
     std::vector<std::pair<std::string, std::string>> Sema::getArgTypeList(std::string f)
@@ -15,6 +21,10 @@ namespace spc
         auto p = table.lookup(f);
         if (!p.first)
             throw std::runtime_error("Function: '"+f+"' does not exist.");
+        if (p.second.getArgTypes().empty() && p.second.getType() == "func")
+        {
+            return {};
+        }
         if (!p.second.isFunction())
             throw std::runtime_error("'"+f+"' is not a function.");
         auto&& result = p.second.getArgTypes();
@@ -102,8 +112,11 @@ namespace spc
         std::vector<std::pair<std::string, Type>> pargs;
         for (auto expr : ce->getArgs()->getData())
             pargs.push_back(process(expr));
+        if (pargs.empty())
+            throw std::runtime_error("Arg List Can not be empty,");
         control=convert_to_rpn(control);
         //generate code for rpn
+        std::string modifier  = (pargs[0].second.getType() == "float" ? "f":"");
         std::vector<std::pair<std::string, Type>> opn;
         for(int i = 0; i < control.length(); ++i)
         {
@@ -118,22 +131,22 @@ namespace spc
                 switch(control[i])
                 {
                     case '+':
-                        output("let " + name + " add "+x.first+" "+y.first);
+                        output("let " + name + " add"+ modifier+" "+x.first+" "+y.first);
                         break;
                     case '-':
-                        output("let " + name + " sub "+x.first+" "+y.first);
+                        output("let " + name + " sub"+ modifier+" "+x.first+" "+y.first);
                         break;
                     case '*':
-                        output("let " + name + " mul "+x.first+" "+y.first);
+                        output("let " + name + " mul"+ modifier+" "+x.first+" "+y.first);
                         break;
                     case '/':
-                        output("let " + name + " div "+x.first+" "+y.first);
+                        output("let " + name + " div"+ modifier+" "+x.first+" "+y.first);
                         break;
                     case '%':
-                        output("let " + name + " mod "+x.first+" "+y.first);
+                        output("let " + name + " mod"+ modifier+" "+x.first+" "+y.first);
                         break;
                     case '^':
-                        output("let " + name + " pow "+x.first+" "+y.first);
+                        output("let " + name + " pow"+ modifier+" "+x.first+" "+y.first);
                         break;
                     default: throw std::runtime_error(std::string("Bad operator in special expression: ").append(1, control[i]));
                 }
